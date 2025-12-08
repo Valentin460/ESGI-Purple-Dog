@@ -1,0 +1,46 @@
+@layer components {
+  form {
+    @apply flex flex-col gap-2;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply w-full  px-3 py-2 border border-gray-300 rounded-2xl bg-gray-100;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply border-gray-500 shadow-[0_0_0_2px_rgba(0,0,0,0.1)] outline-none;
+  }
+
+  input[type='checkbox'] {
+    @apply float-left w-auto my-2 mr-4 cursor-pointer transition-colors duration-200 hover:bg-green-950;
+  }
+
+  input[type='checkbox'] + label {
+    @apply -mt-1;
+  }
+
+  label {
+    @apply mt-2 cursor-pointer block font-medium;
+  }
+
+  input[type='submit'] {
+    @apply px-4 py-2 bg-green-900 text-white font-bold border-none rounded-2xl cursor-pointer transition-colors duration-200 hover:bg-green-600;
+  }
+.auth{
+  @apply text-center font-bold text-4xl bg-linear-to-t from-green-950 to-indigo-600  bg-clip-text text-transparent
+}
+.inputChamps{
+  @apply max-w-3xl mx-auto my-8
+}
+
+.loginForm{
+  @apply w-full px-3 py-2 border rounded-2xl bg-gray-100
+}
+ .main{
+        @apply bg-green-700
+    }
+  }

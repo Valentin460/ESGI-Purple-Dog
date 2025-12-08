@@ -1,6 +1,7 @@
 @import "tailwindcss";
-@import './base.css';
+
+@import "./style.css";
 @import "./footer.css";
 @import "./header.css";
 @import "./message.css";
-@import "./style.css";
+@import "./profileUser.css";

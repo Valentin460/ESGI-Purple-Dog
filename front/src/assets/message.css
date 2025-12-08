@@ -1,0 +1,42 @@
+@layer components {
+    .send-button{
+    @apply bg-green-800 hover:bg-green-600 px-4 py-2 rounded-md text-white font-bold border-red-800 cursor-pointer
+    }
+
+    .message-input{
+        @apply flex gap-2 mt-21 
+    }
+
+    .input-field-message {
+        @apply bg-gray-200 rounded-2xl flex-1 p-2 border border-gray-300 
+    }
+    .message-list{
+        @apply bg-gray-300 p-1 border border-gray-600 rounded-2xl
+    }
+}
+
+
+
+
+
+
+
+
+.message-sent {
+  background-color: #007bff; /* Bleu */
+  color: white;
+  padding: 0.5rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  text-align: right;
+}
+
+.message-received {
+  background-color: #28a745; /* Vert */
+  color: white;
+  padding: 0.5rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  text-align: left;
+}
+
