@@ -6,36 +6,43 @@ import MesObjets from '../components/MesObjets.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
+    {
+      path: '/',
+      name: 'home',
+      component: PublierObjet,
+      meta: {
+        title: 'Publier un objet - Purple Dog',
+      },
+    },
     {
       path: '/publier',
       name: 'publier-objet',
       component: PublierObjet,
       meta: {
-        title: 'Publier un objet'
-      }
+        title: 'Publier un objet',
+      },
     },
     {
       path: '/mes-objets',
       name: 'mes-objets',
       component: MesObjets,
       meta: {
-        title: 'Mes objets en vente'
-      }
+        title: 'Mes objets en vente',
+      },
     },
     {
       path: '/profile',
       name: 'profile',
       component: ProfileView,
       meta: {
-        title: 'Mon Profil'
-      }
+        title: 'Mon Profil',
+      },
     },
     {
       path: '/profil',
-      redirect: '/profile'
-    }
-  ]
+      redirect: '/profile',
+    },
+  ],
 })
 
 router.beforeEach((to, from, next) => {
