@@ -5,20 +5,13 @@ import PublierObjet from '../components/PublierObjet.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: PublierObjet,
-      meta: {
-        title: 'Publier un objet - Purple Dog'
-      }
-    },
+
     {
       path: '/publier',
       name: 'publier-objet',
       component: PublierObjet,
       meta: {
-        title: 'Publier un objet - Purple Dog'
+        title: 'Publier un objet'
       }
     },
     {
