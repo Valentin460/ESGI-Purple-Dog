@@ -2,7 +2,7 @@
   <div class="mes-objets-page">
     <div class="page-container">
       <div class="page-header">
-        <h1>📦 Mes objets en vente</h1>
+        <h1> Mes objets en vente</h1>
         <p class="subtitle">Gérez vos annonces et suivez vos ventes</p>
       </div>
 
@@ -30,8 +30,7 @@
       <!-- Liste des objets -->
       <div v-if="objetsFiltres.length === 0" class="empty-state">
         <div class="empty-icon">📭</div>
-        <h3>Aucun objet en vente</h3>
-        <p>Vous n'avez pas encore publié d'objets</p>
+        <h3>Aucun objet</h3>
         <button @click="$router.push('/publier')" class="btn-publier">
           Publier un objet
         </button>
@@ -46,10 +45,10 @@
               {{ getStatutLabel(objet.statut) }}
             </div>
             <div v-if="objet.typeVente === 'enchere'" class="type-badge">
-              🔨 Enchère
+              Enchère
             </div>
             <div v-else class="type-badge vente-rapide">
-              ⚡ Vente rapide
+              Vente rapide
             </div>
           </div>
 
@@ -65,11 +64,11 @@
                 <span class="prix-actuel">{{ formatPrice(objet.enchereActuelle || objet.prixDepart) }}</span>
               </div>
               <div class="offres-info">
-                <span class="icon">🔔</span>
+                <span class="icon"></span>
                 <span>{{ objet.nombreOffres || 0 }} offre(s)</span>
               </div>
               <div class="temps-restant">
-                <span class="icon">⏱️</span>
+                <span class="icon"></span>
                 <span>{{ getTempsRestant(objet) }}</span>
               </div>
             </div>
@@ -83,7 +82,7 @@
 
             <!-- Questions acheteurs -->
             <div v-if="objet.nombreQuestions > 0" class="questions-badge">
-              ❓ {{ objet.nombreQuestions }} nouvelle(s) question(s)
+              {{ objet.nombreQuestions }} nouvelle(s) question(s)
             </div>
           </div>
         </div>
@@ -119,7 +118,7 @@
             <label>
               <input type="radio" v-model="nouveauType" value="vente-rapide" />
               <span class="radio-label">
-                <span class="radio-icon">⚡</span>
+                <span class="radio-icon"></span>
                 <span>Vente rapide</span>
               </span>
             </label>
@@ -127,7 +126,7 @@
 
           <div v-if="nouveauType === 'enchere'" class="enchere-params">
             <div class="info-enchere">
-              ℹ️ Les enchères durent automatiquement 7 jours
+              Les enchères durent automatiquement 7 jours
             </div>
           </div>
         </div>
@@ -168,7 +167,7 @@
           </div>
 
           <p v-if="nouveauPrix >= objetSelectionne?.prix" class="error-message">
-            ⚠️ Le nouveau prix doit être inférieur au prix actuel
+            Le nouveau prix doit être inférieur au prix actuel
           </p>
         </div>
         <div class="modal-footer">
@@ -196,11 +195,11 @@
           <!-- Onglets -->
           <div class="tabs">
             <button @click="ongletActif = 'offres'" :class="{ active: ongletActif === 'offres' }" class="tab-button">
-              💰 Offres ({{ objetSelectionne?.offres?.length || 0 }})
+              Offres ({{ objetSelectionne?.offres?.length || 0 }})
             </button>
             <button @click="ongletActif = 'questions'" :class="{ active: ongletActif === 'questions' }"
               class="tab-button">
-              ❓ Questions ({{ objetSelectionne?.questions?.length || 0 }})
+              Questions ({{ objetSelectionne?.questions?.length || 0 }})
             </button>
           </div>
 
@@ -244,7 +243,7 @@
                   <textarea v-model="question.nouvelleReponse" placeholder="Écrivez votre réponse..."
                     class="reponse-textarea"></textarea>
                   <button @click="envoyerReponse(question)" class="btn-send">
-                    📤 Envoyer
+                    Envoyer
                   </button>
                 </div>
               </div>
@@ -289,10 +288,10 @@
             <!-- Type de vente et statut -->
             <div class="detail-badges">
               <div v-if="objetSelectionne?.typeVente === 'enchere'" class="badge-type enchere">
-                🔨 Enchère
+                Enchère
               </div>
               <div v-else class="badge-type vente">
-                ⚡ Vente rapide
+                Vente rapide
               </div>
               <div class="badge-statut" :class="objetSelectionne?.statut">
                 {{ getStatutLabel(objetSelectionne?.statut) }}
@@ -322,28 +321,26 @@
 
             <!-- Temps restant pour enchère -->
             <div v-if="objetSelectionne?.typeVente === 'enchere'" class="temps-restant-detail">
-              <span class="icon">⏱️</span>
+              <span class="icon"></span>
               <span>{{ getTempsRestant(objetSelectionne) }}</span>
             </div>
 
             <!-- Résumé offres et messages -->
             <div class="resume-interactions">
               <div class="resume-item">
-                <span class="resume-icon">🔔</span>
                 <span class="resume-text">{{ objetSelectionne?.nombreOffres || 0 }} offre(s) reçue(s)</span>
               </div>
               <div class="resume-item">
-                <span class="resume-icon">❓</span>
                 <span class="resume-text">{{ objetSelectionne?.questions?.length || 0 }} question(s) reçue(s)</span>
               </div>
             </div>
 
             <!-- Liste des offres reçues -->
             <div v-if="objetSelectionne?.offres && objetSelectionne.offres.length > 0" class="section-detail">
-              <h4>💰 Offres reçues</h4>
+              <h4> Offres reçues</h4>
               <div class="offres-list-detail">
                 <div v-for="(offre, index) in objetSelectionne.offres" :key="index" class="offre-detail-item">
-                  <div class="offre-user">👤 {{ offre.acheteur }}</div>
+                  <div class="offre-user"> {{ offre.acheteur }}</div>
                   <div class="offre-montant-small">{{ formatPrice(offre.montant) }}</div>
                   <div class="offre-date-small">{{ formatDate(offre.date) }}</div>
                 </div>
@@ -352,7 +349,7 @@
 
             <!-- Liste des messages reçus -->
             <div v-if="objetSelectionne?.questions && objetSelectionne.questions.length > 0" class="section-detail">
-              <h4>❓ Questions reçues</h4>
+              <h4> Questions reçues</h4>
               <div class="questions-list-detail">
                 <div v-for="(question, index) in objetSelectionne.questions" :key="index" class="question-detail-item">
                   <div class="question-user">👤 {{ question.acheteur }}</div>
@@ -360,7 +357,7 @@
                   <div v-if="question.reponse" class="question-reponse">
                     <strong>Votre réponse :</strong> {{ question.reponse }}
                   </div>
-                  <div v-else class="question-non-repondu">⚠️ Non répondu</div>
+                  <div v-else class="question-non-repondu"> Non répondu</div>
                 </div>
               </div>
             </div>
@@ -466,17 +463,17 @@
                 <div class="radio-group">
                   <label class="radio-option">
                     <input type="radio" v-model="formModif.typeVente" value="enchere" required />
-                    <span>🔨 Enchère (durée: 7 jours)</span>
+                    <span> Enchère (durée: 7 jours)</span>
                   </label>
                   <label class="radio-option">
                     <input type="radio" v-model="formModif.typeVente" value="vente-rapide" required />
-                    <span>⚡ Vente rapide</span>
+                    <span> Vente rapide</span>
                   </label>
                 </div>
               </div>
 
               <div v-if="formModif.typeVente === 'enchere'" class="info-prix-enchere">
-                <p>ℹ️ Prix de départ de l'enchère : <strong>{{ formatPrice(formModif.prix * 0.9) }}</strong>
+                <p>Prix de départ de l'enchère : <strong>{{ formatPrice(formModif.prix * 0.9) }}</strong>
                   (automatiquement calculé à -10%)</p>
               </div>
             </div>
@@ -634,7 +631,7 @@ const getStatutLabel = (statut) => {
   const labels = {
     'actif': '✓ Actif',
     'vendu': '✓ Vendu',
-    'expire': '⏰ Expiré'
+    'expire': ' Expiré'
   }
   return labels[statut] || statut
 }
