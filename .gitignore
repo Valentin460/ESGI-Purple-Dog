@@ -1,0 +1,29 @@
+# Environment variables (vraies valeurs)
+.env.local
+.env.*.local
+back/.env.local
+front/.env.local
+
+# MAIS garder les templates
+!.env
+!back/.env
+!front/.env
+
+# Data folders
+data/
+back/uploads/
+
+# Dependencies
+node_modules/
+back/node_modules/
+front/node_modules/
+
+# Build outputs
+dist/
+build/
+back/dist/
+front/dist/
+
+# IDE
+.vscode/
+.idea/
