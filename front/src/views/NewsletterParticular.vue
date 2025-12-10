@@ -25,73 +25,73 @@ const onSubscribe = () => {
 </script>
 
 <template>
-  <div class="newsletter-shell">
-    <div class="card-narrow">
-      <div class="title-center">
-        <h1 class="title-xl">Newsletter Particuliers</h1>
-        <p class="subtitle-muted">Recevez les meilleures sélections d'œuvres d'art</p>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+    <div class="max-w-md w-full space-y-8">
+      <div class="text-center">
+        <h1 class="text-3xl font-bold mb-2">Newsletter Particuliers</h1>
+        <p class="text-gray-600">Recevez les meilleures sélections d'œuvres d'art</p>
       </div>
       
-      <form class="newsletter-card" @submit.prevent="onSubscribe">
-        <div v-if="subscribed" class="notice-success">
+      <form class="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md" @submit.prevent="onSubscribe">
+        <div v-if="subscribed" class="p-4 bg-green-50 border border-green-200 rounded text-green-700">
           ✓ Inscription réussie !
         </div>
 
         <div>
-          <label for="email" class="field-label">Adresse email :</label>
+          <label for="email" class="block font-medium mb-2">Adresse email :</label>
           <input 
             id="email" 
             v-model.trim="email" 
             type="email" 
             required 
             placeholder="votre@email.com" 
-            class="field-input"
+            class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-          <p v-if="emailError" class="field-error">{{ emailError }}</p>
+          <p v-if="emailError" class="text-red-600 text-sm mt-2">{{ emailError }}</p>
         </div>
 
-        <div class="card-muted stack-gap-3">
-          <div class="checkbox-line">
+        <div class="space-y-3 bg-gray-50 p-4 rounded border border-gray-200">
+          <div class="flex items-start gap-3">
             <input 
               id="newsletter-interest"
               type="checkbox" 
-              class="checkbox-input"
+              class="w-5 h-5 mt-1 accent-indigo-600"
             >
-            <label for="newsletter-interest" class="text-muted-sm">
+            <label for="newsletter-interest" class="text-sm text-gray-600">
               Je souhaite recevoir les actualités et les sélections d'œuvres d'art
             </label>
           </div>
 
-          <div class="checkbox-line">
+          <div class="flex items-start gap-3">
             <input 
               id="newsletter-offers"
               type="checkbox" 
-              class="checkbox-input"
+              class="w-5 h-5 mt-1 accent-indigo-600"
             >
-            <label for="newsletter-offers" class="text-muted-sm">
+            <label for="newsletter-offers" class="text-sm text-gray-600">
               Je souhaite recevoir les offres spéciales et promotions
             </label>
           </div>
 
-          <div class="checkbox-line">
+          <div class="flex items-start gap-3">
             <input 
               id="newsletter-rgpd"
               type="checkbox" 
               required
-              class="checkbox-input"
+              class="w-5 h-5 mt-1 accent-indigo-600"
             >
-            <label for="newsletter-rgpd" class="text-muted-sm">
-              J'accepte la <RouterLink to="/rgpd" target="_blank" class="link-underline-strong">politique de confidentialité</RouterLink>
+            <label for="newsletter-rgpd" class="text-sm text-gray-600">
+              J'accepte la <RouterLink to="/rgpd" target="_blank" class="text-blue-700 hover:underline font-semibold">politique de confidentialité</RouterLink>
             </label>
           </div>
         </div>
 
-        <button type="submit" class="cta-secondary">
+        <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-3 rounded hover:bg-indigo-700 transition cursor-pointer">
           Continuer vers RGPD
         </button>
 
-        <div class="footer-center">
-          <RouterLink to="/" class="link-strong">
+        <div class="text-center pt-4">
+          <RouterLink to="/" class="text-blue-800 hover:text-blue-700 font-semibold">
             ← Retour à l'accueil
           </RouterLink>
         </div>

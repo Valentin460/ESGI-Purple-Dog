@@ -34,53 +34,53 @@ const onSubscribe = () => {
 </script>
 
 <template>
-  <div class="newsletter-shell">
-    <div class="card-narrow">
-      <div class="title-center">
-        <h1 class="title-xl">Newsletter Professionnels</h1>
-        <p class="subtitle-muted">Restez informé des actualités et opportunités exclusives</p>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
+    <div class="max-w-md w-full space-y-8">
+      <div class="text-center">
+        <h1 class="text-3xl font-bold mb-2">Newsletter Professionnels</h1>
+        <p class="text-gray-600">Restez informé des actualités et opportunités exclusives</p>
       </div>
       
-      <form class="newsletter-card" @submit.prevent="onSubscribe">
-        <div v-if="subscribed" class="notice-success">
+      <form class="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md" @submit.prevent="onSubscribe">
+        <div v-if="subscribed" class="p-4 bg-green-50 border border-green-200 rounded text-green-700">
           ✓ Inscription réussie !
         </div>
 
         <div>
-          <label for="email" class="field-label">Adresse email professionnelle :</label>
+          <label for="email" class="block font-medium mb-2">Adresse email professionnelle :</label>
           <input 
             id="email" 
             v-model.trim="email" 
             type="email" 
             required 
             placeholder="votre@email.com" 
-            class="field-input"
+            class="w-full border border-gray-300 rounded px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-          <p v-if="emailError" class="field-error">{{ emailError }}</p>
+          <p v-if="emailError" class="text-red-600 text-sm mt-2">{{ emailError }}</p>
         </div>
 
-        <div class="card-muted row-start">
+        <div class="flex items-start gap-3 bg-gray-50 p-4 rounded border border-gray-200">
           <input 
             id="accept-rgpd"
             v-model="acceptRGPD" 
             type="checkbox" 
             required 
-            class="checkbox-input"
+            class="w-5 h-5 mt-1 accent-indigo-600"
           >
-          <div class="flex-grow-1">
-            <label for="accept-rgpd" class="text-muted-sm">
-              J'accepte la <RouterLink to="/pro/rgpd" target="_blank" class="link-underline">politique de confidentialité</RouterLink> et de recevoir des communications de Purple Dog
+          <div class="flex-1">
+            <label for="accept-rgpd" class="text-sm text-gray-600">
+              J'accepte la <RouterLink to="/pro/rgpd" target="_blank" class="text-blue-800 hover:underline">politique de confidentialité</RouterLink> et de recevoir des communications de Purple Dog
             </label>
-            <p v-if="rgpdError" class="field-error">{{ rgpdError }}</p>
+            <p v-if="rgpdError" class="text-red-600 text-sm mt-2">{{ rgpdError }}</p>
           </div>
         </div>
 
-        <button type="submit" class="cta-secondary">
+        <button type="submit" class="w-full bg-indigo-600 text-white font-semibold py-3 rounded hover:bg-indigo-700 transition cursor-pointer">
           Continuer vers RGPD
         </button>
 
-        <div class="footer-center">
-          <RouterLink to="/pro/mandat" class="link-strong">
+        <div class="text-center pt-4">
+          <RouterLink to="/pro/mandat" class="text-blue-800 hover:text-blue-700 font-semibold">
             ← Retour au mandat
           </RouterLink>
         </div>
