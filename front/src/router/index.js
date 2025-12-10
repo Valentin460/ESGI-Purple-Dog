@@ -1,4 +1,4 @@
-import { create, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import ProfileView from '../views/ProfileView.vue'
 import PublierObjet from '../components/PublierObjet.vue'
 import MesObjets from '../components/MesObjets.vue'
