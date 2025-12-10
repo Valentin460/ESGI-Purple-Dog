@@ -1,5 +1,5 @@
 @layer components{
    .header{
-    @apply bg-linear-to-tr from-gray-200 to-gray-400 text-black py-4 px-8 shadow-lg flex justify-between items-center font-bold
+    @apply bg-white text-black py-4 px-8 shadow-sm flex justify-between items-center;
     }
 }

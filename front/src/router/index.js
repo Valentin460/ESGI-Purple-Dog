@@ -1,11 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import App from '../App.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: App
+    component: () => import('../views/Home.vue')
   },
   {
     path: '/profile/userProfile',
@@ -20,7 +19,17 @@ const routes = [
   {
     path: '/auth/register',
     name: 'Register',
-    component: () => import('../views/Register.vue')
+    component: () => import('../views/RegisterParticular.vue')
+  },
+  {
+    path: '/auth/register/particulier',
+    name: 'RegisterParticulier',
+    component: () => import('../views/RegisterParticular.vue')
+  },
+  {
+    path: '/auth/register/professionnel',
+    name: 'RegisterProfessionnel',
+    component: () => import('../views/RegisterProfessional.vue')
   },
   {
     path: '/auth/logout',
@@ -31,6 +40,36 @@ const routes = [
     path: '/categories',
     name: 'Categories',
     component: () => import('../views/Categories.vue')
+  },
+  {
+    path: '/pro/cgv',
+    name: 'AcceptCGVProfessional',
+    component: () => import('../views/acceptCgvProfessional.vue')
+  },
+  {
+    path: '/pro/mandat',
+    name: 'CaApportProfessional',
+    component: () => import('../views/caApportProfessional.vue')
+  },
+  {
+    path: '/pro/newsletter',
+    name: 'NewsletterProfessional',
+    component: () => import('../views/NewsletterProfessional.vue')
+  },
+  {
+    path: '/pro/rgpd',
+    name: 'RgpdProfessional',
+    component: () => import('../views/RgpdProfessional.vue')
+  },
+  {
+    path: '/newsletter',
+    name: 'NewsletterParticular',
+    component: () => import('../views/NewsletterParticular.vue')
+  },
+  {
+    path: '/rgpd',
+    name: 'RgpdParticular',
+    component: () => import('../views/RgpdParticular.vue')
   }
 ]
 

@@ -1,5 +1,5 @@
 @layer components {
-    .footer{
-    @apply text-center text-white font-bold bg-linear-to-br from-green-950 to-indigo-600 py-8 w-full mt-auto
+  .footer {
+    @apply text-center text-black font-bold bg-linear-to-br from-gray-300 to-gray-100 py-8 w-full mt-auto;
   }
 }
