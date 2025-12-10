@@ -1,0 +1,183 @@
+@layer components {
+  form {
+    @apply flex flex-col gap-2;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply w-full  px-3 py-2 border border-gray-300 rounded-2xl bg-gray-100;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply border-gray-500 shadow-[0_0_0_2px_rgba(0,0,0,0.1)] outline-none;
+  }
+
+  input[type='checkbox'] {
+    @apply float-left w-auto my-2 mr-4 cursor-pointer transition-colors duration-200 hover:bg-green-950;
+  }
+
+  input[type='checkbox'] + label {
+    @apply -mt-1;
+  }
+
+  label {
+    @apply mt-2 cursor-pointer block font-medium;
+  }
+
+  input[type='submit'] {
+    @apply px-4 py-2 bg-green-900 text-white font-bold border-none rounded-2xl cursor-pointer transition-colors duration-200 hover:bg-green-600;
+  }
+.auth{
+  @apply text-center font-bold text-4xl bg-linear-to-t from-green-950 to-indigo-600  bg-clip-text text-transparent
+}
+.inputChamps{
+  @apply max-w-3xl mx-auto my-8
+}
+
+.loginForm{
+  @apply w-full px-3 py-2 border rounded-2xl bg-gray-100
+}
+.main{
+        @apply bg-green-700
+    }
+    .nav-bar{
+        @apply bg-white border-b border-gray-200 py-3
+    }
+.router-nav{
+    @apply hover:text-gray-600 text-black transition
+}
+.favoris{
+    @apply hover:text-gray-600 transition
+  }
+
+  .form-seach{
+    @apply relative flex items-center rounded-2xl shadow-sm
+  }
+  .form-inputSearch{
+    @apply w-72 pl-4 pr-10 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-400 bg-white
+  }
+
+    /* Auth pages */
+    .auth-page {
+      @apply min-h-screen flex items-center justify-center bg-gray-100 py-20 px-4;
+    }
+
+    .auth-card {
+      @apply w-full max-w-md;
+    }
+
+    .auth-title {
+      @apply mb-8 text-center font-bold text-4xl bg-linear-to-b from-green-950 to-indigo-600 bg-clip-text text-transparent;
+    }
+
+    .auth-error {
+      @apply mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm;
+    }
+
+    .auth-form {
+      @apply block bg-white p-8 rounded-2xl shadow-lg space-y-6;
+    }
+
+    .field-label {
+      @apply block text-gray-800 font-medium mb-2;
+    }
+
+    .field-input {
+      @apply w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-800 transition-all;
+    }
+
+    .field-input.error {
+      @apply border-red-500;
+    }
+
+    .field-input-with-toggle {
+      @apply pr-12;
+    }
+
+    .field-error {
+      @apply mt-1 text-sm text-red-600;
+    }
+
+    .password-wrapper {
+      @apply relative;
+    }
+
+    .password-toggle {
+      @apply absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none;
+    }
+
+    .forgot-link {
+      @apply text-right text-sm text-indigo-600 hover:text-indigo-800 transition-colors;
+    }
+
+    .submit-btn {
+      @apply w-full bg-linear-to-r from-green-950 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .submit-loading {
+      @apply flex items-center justify-center;
+    }
+
+    .spinner-icon {
+      @apply animate-spin -ml-1 mr-3 h-5 w-5 text-white;
+    }
+
+    .spinner-track {
+      @apply opacity-25;
+    }
+
+    .spinner-path {
+      @apply opacity-75;
+    }
+
+    .auth-footer {
+      @apply text-center pt-4 border-t border-gray-200 text-gray-600 text-sm;
+    }
+
+    .auth-footer button {
+      @apply text-indigo-600 hover:text-indigo-800 font-semibold transition-colors;
+    }
+
+    .modal-overlay {
+      @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+    }
+
+    .modal-card {
+      @apply bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl;
+    }
+
+    .modal-title {
+      @apply text-3xl font-bold text-center mb-6;
+    }
+
+    .modal-subtitle {
+      @apply text-gray-600 text-center mb-8;
+    }
+
+    .modal-options {
+      @apply space-y-4;
+    }
+
+    .modal-choice {
+      @apply block w-full p-6 border-2 border-gray-300 rounded-lg hover:border-indigo-600 hover:bg-indigo-50 transition text-center;
+    }
+
+    .modal-choice-title {
+      @apply text-xl font-semibold mb-2 text-gray-900;
+    }
+
+    .modal-choice-desc {
+      @apply text-sm text-gray-600;
+    }
+
+    .modal-choice-icon {
+      @apply w-12 h-12 mx-auto mb-3 text-gray-700;
+    }
+
+    .modal-cancel {
+      @apply mt-6 w-full py-2 text-gray-600 hover:text-gray-900 transition;
+    }
+}

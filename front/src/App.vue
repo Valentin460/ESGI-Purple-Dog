@@ -1,22 +1,17 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import Header from './components/layout/Header.vue'
+import Footer from './components/layout/Footer.vue'
 </script>
 
 <template>
-  <RouterView />
+  <div class="flex flex-col min-h-screen">
+    <Header />
+    <main class="grow bg-white">
+      <RouterView />
+    </main>
+    <Footer />
+  </div>
 </template>
 
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial,
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+<style scoped>
 </style>
