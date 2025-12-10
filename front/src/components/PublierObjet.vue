@@ -14,12 +14,12 @@
           <h2>Informations générales</h2>
 
           <div class="form-group">
-            <label for="nom">Nom de l'objet *</label>
+            <label for="nom">Nom de l'objet </label>
             <input type="text" id="nom" v-model="formData.nom" required placeholder="Ex: Vase Art Déco en cristal" />
           </div>
 
           <div class="form-group">
-            <label for="categorie">Catégorie *</label>
+            <label for="categorie">Catégorie </label>
             <select id="categorie" v-model="formData.categorie" required>
               <option value="" disabled>Sélectionnez une catégorie</option>
               <option value="Mobilier">Mobilier</option>
@@ -60,7 +60,7 @@
           </div>
 
           <div class="form-group">
-            <label for="description">Description *</label>
+            <label for="description">Description </label>
             <textarea id="description" v-model="formData.description" required
               placeholder="Décrivez votre objet en détail : époque, matériaux, état, provenance..." rows="6"></textarea>
             <span class="char-count">{{ formData.description.length }} caractères</span>
@@ -69,9 +69,9 @@
 
         <!-- Photos -->
         <div class="form-section">
-          <h2>Photos *</h2>
+          <h2>Photos </h2>
           <p class="section-info">
-            <span class="icon-info">ℹ️</span>
+            <InfoIcon :size="20" class="icon-info" />
             Minimum 10 photos requises - Format JPG, PNG - Maximum 5 Mo par photo
           </p>
 
@@ -83,14 +83,14 @@
               <div v-for="(photo, index) in formData.photos" :key="index" class="photo-preview">
                 <img :src="photo.preview" :alt="`Photo ${index + 1}`" />
                 <button type="button" @click="removePhoto(index)" class="remove-photo-btn">
-                  ✕
+                  <XIcon :size="16" />
                 </button>
                 <span class="photo-number">{{ index + 1 }}</span>
               </div>
 
               <button type="button" @click="$refs.photosInput.click()" class="add-photo-btn"
                 :class="{ disabled: formData.photos.length >= 20 }" :disabled="formData.photos.length >= 20">
-                <span class="icon-upload">📤</span>
+                <UploadIcon :size="32" class="icon-upload" />
                 <span>Ajouter des photos</span>
                 <small>{{ formData.photos.length }}/20</small>
               </button>
@@ -104,7 +104,7 @@
         <div class="form-section">
           <h2>Documents</h2>
           <p class="section-info">
-            <span class="icon-info">ℹ️</span>
+            <InfoIcon :size="20" class="icon-info" />
             Certificat d'authenticité, facture, expertise... (Optionnel mais recommandé)
           </p>
 
@@ -114,16 +114,16 @@
 
             <div class="documents-list">
               <div v-for="(doc, index) in formData.documents" :key="index" class="document-item">
-                <span class="icon-file">📄</span>
+                <FileTextIcon :size="20" class="icon-file" />
                 <span class="document-name">{{ doc.name }}</span>
                 <span class="document-size">{{ formatFileSize(doc.size) }}</span>
                 <button type="button" @click="removeDocument(index)" class="remove-doc-btn">
-                  ✕
+                  <XIcon :size="16" />
                 </button>
               </div>
 
               <button type="button" @click="$refs.documentsInput.click()" class="add-document-btn">
-                <span class="icon-upload-small">📤</span>
+                <UploadIcon :size="18" class="icon-upload-small" />
                 <span>Ajouter un document</span>
               </button>
             </div>
@@ -135,18 +135,18 @@
           <h2>Prix et type de vente</h2>
 
           <div class="form-group">
-            <label for="prix">Prix souhaité (€) *</label>
+            <label for="prix">Prix souhaité (€) </label>
             <input type="number" id="prix" v-model.number="formData.prix" required placeholder="0" min="0"
               step="0.01" />
           </div>
 
           <div class="form-group">
-            <label>Type de vente *</label>
+            <label>Type de vente </label>
             <div class="radio-group">
               <label class="radio-label">
                 <input type="radio" v-model="formData.typeVente" value="enchere" required />
                 <div class="radio-content">
-                  <span class="icon-gavel">🔨</span>
+                  <HammerIcon :size="20" class="icon-gavel" />
                   <div>
                     <strong>Enchère</strong>
                     <p>Mettez votre objet aux enchères</p>
@@ -157,7 +157,7 @@
               <label class="radio-label">
                 <input type="radio" v-model="formData.typeVente" value="vente-rapide" required />
                 <div class="radio-content">
-                  <span class="icon-zap">⚡</span>
+                  <ZapIcon :size="20" class="icon-zap" />
                   <div>
                     <strong>Vente rapide</strong>
                     <p>Vendez directement au prix fixé</p>
@@ -170,13 +170,12 @@
           <!-- Options spécifiques aux enchères -->
           <div v-if="formData.typeVente === 'enchere'" class="enchere-options">
             <div class="info-enchere">
-              <span class="icon-info">ℹ️</span>
+              <InfoIcon :size="20" class="icon-info" />
               <div>
                 <p><strong>Fonctionnement des enchères :</strong></p>
                 <ul>
                   <li>Votre prix souhaité devient automatiquement le prix minimum de vente</li>
                   <li>Le prix de départ est calculé automatiquement à -10% du prix souhaité</li>
-                  <li>L'objet ne sera vendu que si les enchères atteignent le prix minimum</li>
                   <li>L'objet ne sera vendu que si les enchères atteignent le prix minimum</li>
                   <li>Durée par défaut : 7 jours</li>
                 </ul>
@@ -184,16 +183,18 @@
             </div>
 
             <div class="form-group">
-              <label>Prix minimum de vente : {{ formData.prix ? formData.prix.toFixed(2) : '0.00' }} €</label>
-              <p class="info-text">Correspond à votre prix souhaité. L'objet ne sera pas vendu en dessous de ce prix.
+              <label>Prix minimum de vente :
+                {{ formData.prix ? formData.prix.toFixed(2) : '0.00' }} €</label>
+              <p class="info-text">
+                Correspond à votre prix souhaité. L'objet ne sera pas vendu en dessous de ce prix.
               </p>
             </div>
 
             <div class="form-group">
-              <label>Prix de départ de l'enchère : {{ prixDepartRecommande }} € (-10% automatique)</label>
+              <label>Prix de départ de l'enchère : {{ prixDepartRecommande }} € (-10%
+                automatique)</label>
               <p class="info-text">Calculé automatiquement à partir de votre prix souhaité</p>
             </div>
-
           </div>
         </div>
 
@@ -204,7 +205,7 @@
 
         <div v-if="success" class="success-message">
           <div class="success-icon">
-            ✓
+            <CheckIcon :size="24" />
           </div>
           <div>
             <strong>Objet publié avec succès !</strong>
@@ -214,11 +215,9 @@
 
         <!-- Boutons -->
         <div class="form-actions">
-          <button type="button" class="btn-cancel" @click="handleCancel">
-            Annuler
-          </button>
+          <button type="button" class="btn-cancel" @click="handleCancel">Annuler</button>
           <button type="submit" class="btn-submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Publication en cours...' : 'Publier l\'objet' }}
+            {{ isSubmitting ? 'Publication en cours...' : "Publier l'objet" }}
           </button>
         </div>
       </form>
@@ -228,6 +227,15 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import {
+  InfoIcon,
+  UploadIcon,
+  XIcon,
+  FileTextIcon,
+  HammerIcon,
+  ZapIcon,
+  CheckIcon,
+} from 'lucide-vue-next'
 import ArticleDetail from './ArticleDetail.vue'
 
 const formData = ref({
@@ -236,7 +244,7 @@ const formData = ref({
   dimensions: {
     hauteur: null,
     largeur: null,
-    profondeur: null
+    profondeur: null,
   },
   poids: null,
   description: '',
@@ -245,7 +253,7 @@ const formData = ref({
   prix: null,
   typeVente: '',
   prixDepart: null,
-  dureeEnchere: '7'
+  dureeEnchere: '7',
 })
 
 const photosInput = ref(null)
@@ -265,12 +273,15 @@ const prixDepartRecommande = computed(() => {
 })
 
 // Surveiller les changements du prix souhaité pour mettre à jour automatiquement le prix de départ
-watch(() => formData.value.prix, (newPrix) => {
-  if (newPrix) {
-    // Mettre à jour automatiquement le prix de départ à -10%
-    formData.value.prixDepart = parseFloat((newPrix * 0.9).toFixed(2))
-  }
-})
+watch(
+  () => formData.value.prix,
+  (newPrix) => {
+    if (newPrix) {
+      // Mettre à jour automatiquement le prix de départ à -10%
+      formData.value.prixDepart = parseFloat((newPrix * 0.9).toFixed(2))
+    }
+  },
+)
 
 const handlePhotosUpload = (event) => {
   const files = Array.from(event.target.files)
@@ -282,7 +293,7 @@ const handlePhotosUpload = (event) => {
     return
   }
 
-  files.forEach(file => {
+  files.forEach((file) => {
     // Vérifier la taille du fichier (5 Mo max)
     if (file.size > 5 * 1024 * 1024) {
       photosError.value = `La photo "${file.name}" dépasse 5 Mo`
@@ -295,7 +306,7 @@ const handlePhotosUpload = (event) => {
       formData.value.photos.push({
         file: file,
         preview: e.target.result,
-        name: file.name
+        name: file.name,
       })
     }
     reader.readAsDataURL(file)
@@ -313,7 +324,7 @@ const removePhoto = (index) => {
 const handleDocumentsUpload = (event) => {
   const files = Array.from(event.target.files)
 
-  files.forEach(file => {
+  files.forEach((file) => {
     // Vérifier la taille du fichier (10 Mo max)
     if (file.size > 10 * 1024 * 1024) {
       error.value = `Le document "${file.name}" dépasse 10 Mo`
@@ -336,7 +347,7 @@ const formatFileSize = (bytes) => {
   const k = 1024
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
 }
 
 const handleCancel = () => {
@@ -348,7 +359,7 @@ const handleCancel = () => {
       dimensions: {
         hauteur: null,
         largeur: null,
-        profondeur: null
+        profondeur: null,
       },
       poids: null,
       description: '',
@@ -357,7 +368,7 @@ const handleCancel = () => {
       prix: null,
       typeVente: '',
       prixDepart: null,
-      dureeEnchere: '7'
+      dureeEnchere: '7',
     }
     photosError.value = ''
     error.value = ''
@@ -389,7 +400,7 @@ const handleSubmit = async () => {
     }
     // Le prix de départ est calculé automatiquement, pas besoin de validation supplémentaire
     if (!formData.value.dureeEnchere) {
-      error.value = 'La durée de l\'enchère est requise'
+      error.value = "La durée de l'enchère est requise"
       return
     }
   }
@@ -398,15 +409,14 @@ const handleSubmit = async () => {
 
   try {
     // Simulation de l'envoi du formulaire
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Ici, vous enverriez les données au backend
-    console.log('Données de l\'objet:', formData.value)
+    console.log("Données de l'objet:", formData.value)
 
     // Afficher l'article publié
     articlePublie.value = { ...formData.value }
     success.value = true
-
   } catch {
     error.value = 'Une erreur est survenue lors de la publication. Veuillez réessayer.'
   } finally {
@@ -416,6 +426,46 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
+/* Styles pour les icônes SVG */
+.icon-info,
+.icon-file,
+.icon-gavel,
+.icon-zap {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.icon-upload {
+  width: 32px;
+  height: 32px;
+}
+
+.icon-upload-small {
+  width: 18px;
+  height: 18px;
+}
+
+.remove-photo-btn svg,
+.remove-doc-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.success-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.section-info,
+.radio-content,
+.document-item,
+.info-enchere {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .publier-objet-container {
   min-height: 100vh;
   background: #f9fafb;
@@ -508,8 +558,8 @@ label {
   font-size: 0.95rem;
 }
 
-input[type="text"],
-input[type="number"],
+input[type='text'],
+input[type='number'],
 select,
 textarea {
   padding: 0.75rem;
@@ -522,8 +572,8 @@ textarea {
   max-width: 100%;
 }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
+input[type='text']:focus,
+input[type='number']:focus,
 select:focus,
 textarea:focus {
   outline: none;
@@ -711,7 +761,7 @@ textarea {
   cursor: pointer;
 }
 
-.radio-label input[type="radio"] {
+.radio-label input[type='radio'] {
   display: none;
 }
 
@@ -725,7 +775,7 @@ textarea {
   transition: all 0.2s;
 }
 
-.radio-label input[type="radio"]:checked+.radio-content {
+.radio-label input[type='radio']:checked+.radio-content {
   border-color: #667eea;
   background: rgba(102, 126, 234, 0.05);
 }
@@ -920,8 +970,8 @@ textarea {
     padding-right: 2.5rem;
   }
 
-  input[type="text"],
-  input[type="number"],
+  input[type='text'],
+  input[type='number'],
   textarea {
     font-size: 16px;
     /* Évite le zoom automatique sur iOS */
