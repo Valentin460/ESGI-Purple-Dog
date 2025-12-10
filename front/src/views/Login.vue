@@ -1,78 +1,82 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import ForgotPasswordModal from '../components/ForgotPasswordModal.vue'
 
 const router = useRouter()
+const modalRef = ref(null)
 
-const formData = reactive({
-  email: '',
-  password: ''
-})
-
-const loading = ref(false)
-const error = ref('')
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
+const isLoading = ref(false)
 const showPassword = ref(false)
 const showRegisterModal = ref(false)
 
-const emailError = ref('')
-const passwordError = ref('')
-
-const validateEmail = () => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!formData.email) {
-    emailError.value = 'L\'email est requis'
-    return false
-  }
-  if (!emailRegex.test(formData.email)) {
-    emailError.value = 'Email invalide'
-    return false
-  }
-  emailError.value = ''
-  return true
-}
-
-const validatePassword = () => {
-  if (!formData.password) {
-    passwordError.value = 'Le mot de passe est requis'
-    return false
-  }
-  if (formData.password.length < 6) {
-    passwordError.value = 'Le mot de passe doit contenir au moins 6 caractères'
-    return false
-  }
-  passwordError.value = ''
-  return true
-}
-
-const validateForm = () => {
-  const isEmailValid = validateEmail()
-  const isPasswordValid = validatePassword()
-  return isEmailValid && isPasswordValid
-}
-
-const onSubmit = async () => {
-  error.value = ''
-  
-  if (!validateForm()) {
-    return
-  }
-
-  loading.value = true
-
-  try {
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    router.push('/profile/userProfile')
-  } catch (err) {
-    error.value = 'Identifiants incorrects. Veuillez réessayer.'
-    console.error('Erreur de connexion:', err)
-  } finally {
-    loading.value = false
+const openForgotPassword = () => {
+  if (modalRef.value) {
+    modalRef.value.openModal()
   }
 }
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value
+}
+
+const handleLogin = async () => {
+  errorMessage.value = ''
+
+  // Validation côté client
+  if (!email.value || !password.value) {
+    errorMessage.value = 'Veuillez remplir tous les champs'
+    return
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email.value)) {
+    errorMessage.value = 'Veuillez entrer une adresse email valide'
+    return
+  }
+
+  if (password.value.length < 6) {
+    errorMessage.value = 'Le mot de passe doit contenir au moins 6 caractères'
+    return
+  }
+
+  isLoading.value = true
+
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      errorMessage.value = data.message || 'Identifiants incorrects'
+      return
+    }
+
+    // Stockage du token ou redirection
+    if (data.token) {
+      localStorage.setItem('authToken', data.token)
+    }
+
+    // Redirection vers le profil
+    router.push('/profile/userProfile')
+  } catch (error) {
+    errorMessage.value = 'Erreur de connexion. Veuillez réessayer.'
+    console.error('Erreur:', error)
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -80,17 +84,17 @@ const togglePasswordVisibility = () => {
   <div class="min-h-screen flex items-center justify-center bg-gray-100 py-20 px-4">
     <div class="w-full max-w-md">
       <!-- Titre -->
-      <h1 class="mb-8 text-center font-bold text-4xl bg-gradient-to-b from-green-950 to-indigo-600 bg-clip-text text-transparent">
+      <h1 class="mb-8 text-center font-bold text-4xl bg-linear-to-b from-green-950 to-indigo-600 bg-clip-text text-transparent">
         Connexion
       </h1>
 
       <!-- Message d'erreur général -->
-      <div v-if="error" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-        {{ error }}
+      <div v-if="errorMessage" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        {{ errorMessage }}
       </div>
 
       <!-- Formulaire -->
-      <form @submit.prevent="onSubmit" class="bg-white p-8 rounded-2xl shadow-lg space-y-6">
+      <form @submit.prevent="handleLogin" class="bg-white p-8 rounded-2xl shadow-lg space-y-6">
         
         <!-- Champ Email -->
         <div>
@@ -99,17 +103,11 @@ const togglePasswordVisibility = () => {
           </label>
           <input
             id="email"
-            v-model="formData.email"
+            v-model.trim="email"
             type="email"
             placeholder="exemple@email.com"
             class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-800 transition-all"
-            :class="emailError ? 'border-red-500' : ''"
-            @blur="validateEmail"
-            @input="emailError = ''"
           />
-          <p v-if="emailError" class="mt-1 text-sm text-red-600">
-            {{ emailError }}
-          </p>
         </div>
 
         <!-- Champ Mot de passe -->
@@ -120,13 +118,10 @@ const togglePasswordVisibility = () => {
           <div class="relative">
             <input
               id="password"
-              v-model="formData.password"
+              v-model="password"
               :type="showPassword ? 'text' : 'password'"
               placeholder="••••••••"
               class="w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-800 transition-all"
-              :class="passwordError ? 'border-red-500' : ''"
-              @blur="validatePassword"
-              @input="passwordError = ''"
             />
             <button
               type="button"
@@ -144,25 +139,26 @@ const togglePasswordVisibility = () => {
               </svg>
             </button>
           </div>
-          <p v-if="passwordError" class="mt-1 text-sm text-red-600">
-            {{ passwordError }}
-          </p>
         </div>
 
         <!-- Mot de passe oublié -->
-        <div class="text-right text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
-          <RouterLink to="/forgot-password">
+        <div class="text-right text-sm">
+          <button
+            type="button"
+            @click="openForgotPassword"
+            class="text-indigo-600 hover:text-indigo-800 font-semibold transition-colors"
+          >
             Mot de passe oublié ?
-          </RouterLink>
+          </button>
         </div>
 
         <!-- Bouton de soumission -->
         <button
           type="submit"
-          :disabled="loading"
-          class="w-full bg-gradient-to-r from-green-950 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="isLoading"
+          class="w-full bg-linear-to-r from-green-950 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span v-if="!loading">Se connecter</span>
+          <span v-if="!isLoading">Se connecter</span>
           <span v-else class="flex items-center justify-center">
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -221,6 +217,9 @@ const togglePasswordVisibility = () => {
       </button>
     </div>
   </div>
+
+  <!-- Modale Mot de passe oublié -->
+  <ForgotPasswordModal ref="modalRef" />
 </template>
 
 <style scoped>

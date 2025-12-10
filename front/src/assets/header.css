@@ -1,5 +1,13 @@
 @layer components{
    .header{
-    @apply bg-white text-black py-4 px-8 shadow-sm flex justify-between items-center;
+    @apply bg-white text-black py-4 px-8 shadow-sm flex justify-between items-center gap-8;
+    }
+
+   .logo-container{
+    @apply shrink-0;
+    }
+
+   .logo-container img{
+    @apply h-12 w-auto;
     }
 }

@@ -1,12 +1,14 @@
 <script setup>
 import { ref } from 'vue';
 import { useCamera } from '../composables/useCamera';
+import { useEmailConfirmation } from '../composables/useEmailConfirmation';
 
 const user = ref({
   firstname: '',
   lastname: '',
   email: '',
   password: '',
+  confirmPassword: '',
   profilePhoto: null,
   address: '',
   age: '',
@@ -17,6 +19,7 @@ const photoPreview = ref(null);
 const photoError = ref('');
 const fileInputRef = ref(null);
 const { videoRef, isCameraOpen, cameraError, startCamera, stopCamera, captureFromCamera: cameraCapture } = useCamera();
+const { confirmationEmail, showConfirmation, isLoading, errorMessage, sendConfirmationEmail, reset } = useEmailConfirmation();
 
 const triggerPhotoSelect = () => {
   photoError.value = '';
@@ -46,9 +49,24 @@ const capturePhoto = () => {
   });
 };
 
-const onSubmit = () => {
+const onSubmit = async () => {
   if (!user.value.profilePhoto) {
     photoError.value = 'La photo de profil est obligatoire.';
+    return;
+  }
+
+  if (!user.value.password) {
+    alert('Le mot de passe est obligatoire');
+    return;
+  }
+
+  if (user.value.password !== user.value.confirmPassword) {
+    alert('Les mots de passe ne correspondent pas');
+    return;
+  }
+
+  if (user.value.password.length < 8) {
+    alert('Le mot de passe doit contenir au moins 8 caractères');
     return;
   }
 
@@ -57,19 +75,28 @@ const onSubmit = () => {
     return;
   }
   
-  alert('Un email de validation a été envoyé à ' + user.value.email);
-  user.value = {
-    firstname: '',
-    lastname: '',
-    email: '',
-    password: '',
-    profilePhoto: null,
-    address: '',
-    age: '',
-    isOver18: false,
-  };
-  photoPreview.value = null;
-  photoError.value = '';
+  // Envoyer l'email de confirmation
+  const success = await sendConfirmationEmail(user.value.email, user.value.firstname, 'particulier');
+  
+  if (success) {
+    // Réinitialiser le formulaire après 3 secondes
+    setTimeout(() => {
+      user.value = {
+        firstname: '',
+        lastname: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        profilePhoto: null,
+        address: '',
+        age: '',
+        isOver18: false,
+      };
+      photoPreview.value = null;
+      photoError.value = '';
+      reset();
+    }, 3000);
+  }
 };
 </script>
 
@@ -178,6 +205,12 @@ const onSubmit = () => {
             <input id="password" v-model.trim="user.password" type="password" required placeholder="Choisissez un mot de passe sécurisé" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 text-black bg-gray-200 focus:ring-gray-300">
           </div>
 
+          <!-- Confirmation mot de passe -->
+          <div>
+            <label for="confirmPassword" class="block font-medium mb-2 text-gray-800">Confirmer le mot de passe :</label>
+            <input id="confirmPassword" v-model.trim="user.confirmPassword" type="password" required placeholder="Confirmez votre mot de passe" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 text-black bg-gray-200 focus:ring-gray-300">
+          </div>
+
           <!-- Âge et certification 18+ -->
           <div class="space-y-3">
             <div>
@@ -225,6 +258,51 @@ const onSubmit = () => {
           </div>
         </div>
       </form>
+
+      <!-- Modale de confirmation d'email -->
+      <div v-if="showConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+          <div class="text-center space-y-4">
+            <!-- État loading -->
+            <div v-if="isLoading" class="flex flex-col items-center justify-center space-y-4">
+              <div class="animate-spin">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p class="text-gray-600">Envoi de l'email en cours...</p>
+            </div>
+
+            <!-- État succès -->
+            <div v-else-if="!errorMessage" class="space-y-4">
+              <div class="flex justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-800">Inscription réussie !</h2>
+              <p class="text-gray-600">Un email de confirmation a été envoyé à :</p>
+              <p class="font-semibold text-indigo-600 break-all">{{ confirmationEmail }}</p>
+              <p class="text-sm text-gray-500">Veuillez consulter votre boîte mail et cliquer sur le lien de confirmation pour activer votre compte.</p>
+              <div class="pt-4">
+                <p class="text-xs text-gray-400">Redirection en cours...</p>
+              </div>
+            </div>
+
+            <!-- État erreur -->
+            <div v-else class="space-y-4">
+              <div class="flex justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-800">Erreur d'envoi</h2>
+              <p class="text-red-600 font-semibold">{{ errorMessage }}</p>
+              <p class="text-sm text-gray-500">Veuillez vérifier votre email et réessayer.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
