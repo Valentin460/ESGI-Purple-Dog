@@ -109,7 +109,6 @@ app.get('/api/db-test', async (req, res) => {
 // ==========================================
 
 const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/user');
 const stripeRoutes = require('./routes/stripe');
 // Ajouter ici les futures routes :
 // const categoryRoutes = require('./routes/category.routes');
