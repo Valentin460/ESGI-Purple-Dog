@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ForgotPasswordModal from '../components/ForgotPasswordModal.vue'
+import authService from '@/services/auth.service'
 
 const router = useRouter()
 const modalRef = ref(null)
@@ -46,34 +47,18 @@ const handleLogin = async () => {
   isLoading.value = true
 
   try {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-      }),
+    // Utilisation du service d'authentification
+    await authService.login({
+      email: email.value,
+      password: password.value,
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      errorMessage.value = data.message || 'Identifiants incorrects'
-      return
-    }
-
-    // Stockage du token ou redirection
-    if (data.token) {
-      localStorage.setItem('authToken', data.token)
-    }
-
+    // Le token et user sont automatiquement sauvegardés par authService
     // Redirection vers le profil
     router.push('/profile/userProfile')
   } catch (error) {
-    errorMessage.value = 'Erreur de connexion. Veuillez réessayer.'
-    console.error('Erreur:', error)
+    errorMessage.value = error.message || 'Identifiants incorrects. Veuillez réessayer.'
+    console.error('Erreur de connexion:', error)
   } finally {
     isLoading.value = false
   }
@@ -95,7 +80,7 @@ const handleLogin = async () => {
 
       <!-- Formulaire -->
       <form @submit.prevent="handleLogin" class="bg-white p-8 rounded-2xl shadow-lg space-y-6">
-        
+
         <!-- Champ Email -->
         <div>
           <label for="email" class="block text-gray-800 font-medium mb-2">
@@ -182,10 +167,10 @@ const handleLogin = async () => {
     <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl" @click.stop>
       <h2 class="text-3xl font-bold text-center mb-6">Choisissez votre profil</h2>
       <p class="text-gray-600 text-center mb-8">Sélectionnez le type de compte que vous souhaitez créer</p>
-      
+
       <div class="space-y-4">
-        <RouterLink 
-          to="/auth/register/particulier" 
+        <RouterLink
+          to="/auth/register/particulier"
           @click="showRegisterModal = false"
           class="block w-full p-6 border-2 border-gray-300 rounded-lg hover:border-indigo-600 hover:bg-indigo-50 transition text-center"
         >
@@ -196,8 +181,8 @@ const handleLogin = async () => {
           <p class="text-sm text-gray-600">Créer un compte personnel pour acheter des œuvres d'art</p>
         </RouterLink>
 
-        <RouterLink 
-          to="/auth/register/professionnel" 
+        <RouterLink
+          to="/auth/register/professionnel"
           @click="showRegisterModal = false"
           class="block w-full p-6 border-2 border-gray-300 rounded-lg hover:border-indigo-600 hover:bg-indigo-50 transition text-center"
         >
@@ -209,8 +194,8 @@ const handleLogin = async () => {
         </RouterLink>
       </div>
 
-      <button 
-        @click="showRegisterModal = false" 
+      <button
+        @click="showRegisterModal = false"
         class="mt-6 w-full py-2 text-gray-600 hover:text-gray-900 transition"
       >
         Annuler

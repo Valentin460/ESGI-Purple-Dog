@@ -1,0 +1,1603 @@
+{
+	"info": {
+		"_postman_id": "564b4406-51d1-4015-97eb-3fb66c7b7c31",
+		"name": "ESGI Purple Dog API",
+		"description": "Collection complète des APIs pour le projet ESGI Purple Dog",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "17382063"
+	},
+	"item": [
+		{
+			"name": "1. User API",
+			"item": [
+				{
+					"name": "Create User (Individual)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password_hash\": \"hashed_password_123\",\n  \"user_type\": \"individual\",\n  \"individual_data\": {\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"display_name\": \"JohnD\",\n    \"postal_address\": \"123 Main St, Paris\",\n    \"age_verified\": true,\n    \"over_18_certified\": true,\n    \"newsletter_subscribed\": true,\n    \"rgpd_accepted\": true\n  }\n}"
+						},
+						"url": "{{base_url}}/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (Professional)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"marie.dubois@example.com\",\n  \"password_hash\": \"hashed_password_456\",\n  \"user_type\": \"professional\",\n  \"professional_data\": {\n    \"first_name\": \"Marie\",\n    \"last_name\": \"Dubois\",\n    \"company_name\": \"Antiquités Dubois\",\n    \"siret_number\": \"12345678901234\",\n    \"postal_address\": \"10 Rue des Arts, Paris\",\n    \"website\": \"https://antiquites-dubois.fr\",\n    \"specialties\": \"Meubles anciens, Porcelaines\",\n    \"sought_items\": \"Mobilier XVIIIe siècle\",\n    \"newsletter_subscribed\": true\n  }\n}"
+						},
+						"url": "{{base_url}}/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/users/email/john.doe@example.com"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/users/active"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users By Type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/users/type/individual"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/search?q=john",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "john"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/users/count"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/users/1/stats"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.updated@example.com\"\n}"
+						},
+						"url": "{{base_url}}/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Password",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"old_password\": \"old_pass\",\n  \"new_password\": \"new_pass\"\n}"
+						},
+						"url": "{{base_url}}/users/1/password"
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle User Status",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/users/1/toggle-status"
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate User",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/users/1/deactivate"
+					},
+					"response": []
+				},
+				{
+					"name": "Activate User",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/users/1/activate"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/users/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Individual API",
+			"item": [
+				{
+					"name": "Create Individual Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": 1,\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Smith\",\n  \"display_name\": \"JaneS\",\n  \"postal_address\": \"456 Oak Ave, Lyon\",\n  \"age_verified\": true,\n  \"over_18_certified\": true,\n  \"newsletter_subscribed\": false,\n  \"rgpd_accepted\": true\n}"
+						},
+						"url": "{{base_url}}/individuals"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Individuals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/individuals?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"individuals"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Individual By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/individuals/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Individual By User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/individuals/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Individual",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"display_name\": \"JaneSmith2024\",\n  \"newsletter_subscribed\": true\n}"
+						},
+						"url": "{{base_url}}/individuals/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Individual",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/individuals/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Professional API",
+			"item": [
+				{
+					"name": "Create Professional Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"marie.dubois@example.com\",\n  \"password_hash\": \"hashed_password_456\",\n  \"first_name\": \"Marie\",\n  \"last_name\": \"Dubois\",\n  \"company_name\": \"Antiquités Dubois\",\n  \"siret_number\": \"12345678901234\",\n  \"postal_address\": \"10 Rue des Arts, Paris\",\n  \"website\": \"https://antiquites-dubois.fr\",\n  \"specialties\": \"Meubles anciens, Porcelaines\",\n  \"sought_items\": \"Mobilier XVIIIe siècle\",\n  \"newsletter_subscribed\": true\n}"
+						},
+						"url": "{{base_url}}/professionals"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Professionals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/professionals?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"professionals"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Professional By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/professionals/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Professional By User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/professionals/user/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Search Professionals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/professionals/search?q=antiquités",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"professionals",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "antiquités"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Professional",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"website\": \"https://new-website.fr\",\n  \"specialties\": \"Meubles anciens, Art moderne\"\n}"
+						},
+						"url": "{{base_url}}/professionals/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Professional",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/professionals/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Category API",
+			"item": [
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Mobilier\",\n  \"description\": \"Meubles anciens et d'époque\"\n}"
+						},
+						"url": "{{base_url}}/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sub-Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Chaises\",\n  \"description\": \"Chaises anciennes\",\n  \"parent_id\": 1\n}"
+						},
+						"url": "{{base_url}}/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/categories/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Root Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/categories/root"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Children Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/categories/1/children"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category Tree",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/categories/tree"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Mobilier Ancien\",\n  \"description\": \"Meubles d'époque et de style\"\n}"
+						},
+						"url": "{{base_url}}/categories/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/categories/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Auction API",
+			"item": [
+				{
+					"name": "Create Auction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"item_id\": 1,\n  \"seller_id\": 2,\n  \"starting_price\": 100.00,\n  \"reserve_price\": 500.00,\n  \"current_price\": 100.00,\n  \"start_date\": \"2025-12-15T10:00:00Z\",\n  \"end_date\": \"2025-12-22T18:00:00Z\"\n}"
+						},
+						"url": "{{base_url}}/auctions"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Auctions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auctions?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auctions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Auction By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/auctions/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Auctions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/auctions/active"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Upcoming Auctions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/auctions/upcoming"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Completed Auctions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/auctions/completed"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Seller Auctions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/auctions/seller/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Item Auction",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/auctions/item/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Auction",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reserve_price\": 600.00\n}"
+						},
+						"url": "{{base_url}}/auctions/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Auction",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/auctions/1/start"
+					},
+					"response": []
+				},
+				{
+					"name": "End Auction",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/auctions/1/end"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Auction",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/auctions/1/cancel"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Auction",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/auctions/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Bid API",
+			"item": [
+				{
+					"name": "Place Bid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"auction_id\": 1,\n  \"bidder_id\": 3,\n  \"amount\": 150.00\n}"
+						},
+						"url": "{{base_url}}/bids"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Bids",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/bids?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"bids"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bid By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/bids/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Auction Bids",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/bids/auction/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Bids",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/bids/user/3"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Winning Bid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/bids/auction/1/winning"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Highest Bid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/bids/auction/1/highest"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Bid",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/bids/1/cancel"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Bid",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/bids/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Conversation API",
+			"item": [
+				{
+					"name": "Create Conversation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user1_id\": 1,\n  \"user2_id\": 2\n}"
+						},
+						"url": "{{base_url}}/conversations"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Conversations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/conversations"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Conversation By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/conversations/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Conversations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/conversations/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Conversation as Read",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/conversations/1/read/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Conversation",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/conversations/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8. Message API",
+			"item": [
+				{
+					"name": "Send Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"conversation_id\": 1,\n  \"sender_id\": 1,\n  \"content\": \"Bonjour, je suis intéressé par votre article.\"\n}"
+						},
+						"url": "{{base_url}}/messages"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/messages"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Message By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/messages/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Conversation Messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/messages/conversation/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/messages/conversation/1/unread"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Message as Read",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/messages/1/read"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Messages as Read",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/messages/conversation/1/read-all"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Message",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/messages/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9. Review API",
+			"item": [
+				{
+					"name": "Create Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reviewer_id\": 1,\n  \"reviewee_id\": 2,\n  \"item_id\": 1,\n  \"rating\": 5,\n  \"comment\": \"Excellent vendeur, objet conforme à la description!\"\n}"
+						},
+						"url": "{{base_url}}/reviews"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/reviews?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"reviews"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Review By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/reviews/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Reviews (Received)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/reviews/user/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Reviews Given By User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/reviews/reviewer/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Item Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/reviews/item/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Review",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rating\": 4,\n  \"comment\": \"Très bon vendeur!\"\n}"
+						},
+						"url": "{{base_url}}/reviews/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Review",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/reviews/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "10. Notification API",
+			"item": [
+				{
+					"name": "Create Notification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": 1,\n  \"type\": \"BID\",\n  \"title\": \"Nouvelle enchère\",\n  \"message\": \"Une nouvelle enchère a été placée sur votre article\",\n  \"link\": \"/auctions/1\"\n}"
+						},
+						"url": "{{base_url}}/notifications"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/notifications/user/1?page=1&limit=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications",
+								"user",
+								"1"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unread Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/notifications/user/1/unread"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Notification as Read",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/notifications/1/read"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Notifications as Read",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/notifications/user/1/read-all"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Notification",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/notifications/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete All User Notifications",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/notifications/user/1/all"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "11. Subscription Plan API",
+			"item": [
+				{
+					"name": "Create Subscription Plan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Premium\",\n  \"description\": \"Accès complet à toutes les fonctionnalités\",\n  \"price\": 29.99,\n  \"duration_days\": 30,\n  \"features\": \"Enchères illimitées, Support prioritaire\",\n  \"is_active\": true\n}"
+						},
+						"url": "{{base_url}}/subscription-plans"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Subscription Plans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscription-plans?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscription-plans"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Subscription Plans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/subscription-plans/active"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscription Plan By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/subscription-plans/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Subscription Plan",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 24.99,\n  \"description\": \"Plan mis à jour\"\n}"
+						},
+						"url": "{{base_url}}/subscription-plans/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Plan Status",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/subscription-plans/1/toggle-status"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Subscription Plan",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/subscription-plans/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "12. Subscription API",
+			"item": [
+				{
+					"name": "Create Subscription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": 1,\n  \"plan_id\": 1,\n  \"payment_method\": \"CARD\",\n  \"auto_renew\": true\n}"
+						},
+						"url": "{{base_url}}/subscriptions"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Subscriptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions?status=ACTIVE",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "ACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscription By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/subscriptions/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Subscriptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/subscriptions/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Active Subscription",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/subscriptions/user/1/active"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Subscription",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/subscriptions/1/cancel"
+					},
+					"response": []
+				},
+				{
+					"name": "Renew Subscription",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/subscriptions/1/renew"
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Auto Renew",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{base_url}}/subscriptions/1/toggle-auto-renew"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Subscription",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/subscriptions/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "13. Transaction API",
+			"item": [
+				{
+					"name": "Create Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"item_id\": 1,\n  \"buyer_id\": 3,\n  \"seller_id\": 2,\n  \"total_amount\": 550.00,\n  \"payment_method\": \"CARD\",\n  \"shipping_address\": \"10 Rue de la Paix, Paris\"\n}"
+						},
+						"url": "{{base_url}}/transactions"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/transactions?status=COMPLETED&payment_status=PAID",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "COMPLETED"
+								},
+								{
+									"key": "payment_status",
+									"value": "PAID"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/transactions/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/transactions/user/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Buyer Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/transactions/buyer/3"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Seller Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/transactions/seller/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Seller Revenue",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/transactions/seller/2/revenue"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Payment Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"payment_status\": \"PAID\"\n}"
+						},
+						"url": "{{base_url}}/transactions/1/payment-status"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Transaction Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"SHIPPED\"\n}"
+						},
+						"url": "{{base_url}}/transactions/1/status"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Tracking Number",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tracking_number\": \"FR123456789\"\n}"
+						},
+						"url": "{{base_url}}/transactions/1/tracking"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Transaction",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Client a changé d'avis\"\n}"
+						},
+						"url": "{{base_url}}/transactions/1/cancel"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Transaction",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{base_url}}/transactions/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "create item",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

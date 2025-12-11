@@ -1,6 +1,10 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useCamera } from '../composables/useCamera';
+import authService from '@/services/auth.service';
+
+const router = useRouter();
 
 const user = ref({
   firstname: '',
@@ -60,7 +64,7 @@ const handleDocumentUpload = (event) => {
   }
 };
 
-const onSubmit = () => {
+const onSubmit = async () => {
   if (!user.value.profilePhoto) {
     photoError.value = 'La photo de profil est obligatoire.';
     return;
@@ -85,34 +89,62 @@ const onSubmit = () => {
     alert('Tous les champs marqués comme obligatoires doivent être remplis');
     return;
   }
-  
-  // Afficher la modale de confirmation
-  confirmationEmail.value = user.value.email;
-  showConfirmation.value = true;
 
-  // Réinitialiser le formulaire après 3 secondes
-  setTimeout(() => {
-    user.value = {
-      firstname: '',
-      lastname: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      profilePhoto: null,
-      companyName: '',
-      siret: '',
-      address: '',
-      website: '',
-      specialties: '',
-      searchedObjects: '',
-      socialMedia: '',
+  try {
+    // Préparer les données pour l'inscription
+    const registerData = {
+      email: user.value.email,
+      password: user.value.password,
+      first_name: user.value.firstname,
+      last_name: user.value.lastname,
+      address: user.value.address,
+      user_type: 'professional',
+      company_name: user.value.companyName,
+      siret: user.value.siret,
+      website: user.value.website,
+      specialties: user.value.specialties,
+      searched_objects: user.value.searchedObjects,
+      social_media: user.value.socialMedia || null
     };
-    photoPreview.value = null;
-    photoError.value = '';
-    document.value = null;
-    documentPreview.value = null;
-    showConfirmation.value = false;
-  }, 3000);
+
+    // Appel API via authService
+    await authService.register(registerData);
+
+    // Afficher la modale de confirmation
+    confirmationEmail.value = user.value.email;
+    showConfirmation.value = true;
+
+    // Réinitialiser le formulaire et rediriger après 3 secondes
+    setTimeout(() => {
+      user.value = {
+        firstname: '',
+        lastname: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        profilePhoto: null,
+        companyName: '',
+        siret: '',
+        address: '',
+        website: '',
+        specialties: '',
+        searchedObjects: '',
+        socialMedia: '',
+      };
+      photoPreview.value = null;
+      photoError.value = '';
+      document.value = null;
+      documentPreview.value = null;
+      showConfirmation.value = false;
+
+      // Rediriger vers la page de connexion
+      router.push('/auth/login');
+    }, 3000);
+
+  } catch (error) {
+    console.error('Erreur lors de l\'inscription:', error);
+    alert(error.message || 'Erreur lors de l\'inscription. Veuillez réessayer.');
+  }
 };
 </script>
 
@@ -125,7 +157,7 @@ const onSubmit = () => {
         </h1>
         <p class="text-center text-gray-600 mt-2">Aucune carte bancaire requise</p>
       </div>
-      
+
       <form class="mt-8 space-y-8 bg-white p-8 rounded-lg shadow-md" @submit.prevent="onSubmit()">
         <!-- Photo de profil -->
         <div class="flex flex-col items-center">
@@ -244,9 +276,9 @@ const onSubmit = () => {
             <div>
               <label for="document" class="block font-medium mb-2 text-gray-800">Document officiel :</label>
               <p class="text-sm text-gray-600 mb-3">K-Bis, avis de situation INSEE, etc.</p>
-              <input 
-                id="document" 
-                type="file" 
+              <input
+                id="document"
+                type="file"
                 required
                 accept=".pdf,.jpg,.jpeg,.png"
                 @change="handleDocumentUpload"
@@ -263,7 +295,7 @@ const onSubmit = () => {
           <div class="space-y-4">
             <div>
               <label for="website" class="block font-medium mb-2 text-gray-800">
-                Site internet : 
+                Site internet :
                 <span class="text-red-500">*</span>
               </label>
               <input id="website" v-model.trim="user.website" type="url" required placeholder="https://www.exemple.com" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 text-black bg-gray-200 focus:ring-gray-300">
@@ -271,39 +303,39 @@ const onSubmit = () => {
 
             <div>
               <label for="specialties" class="block font-medium mb-2 text-gray-800">
-                Spécialités : 
+                Spécialités :
                 <span class="text-red-500">*</span>
               </label>
-              <textarea 
-                id="specialties" 
-                v-model.trim="user.specialties" 
-                required 
-                placeholder="Décrivez vos spécialités (ex: Art contemporain, Sculptures, Œuvres graphiques, etc.)" 
+              <textarea
+                id="specialties"
+                v-model.trim="user.specialties"
+                required
+                placeholder="Décrivez vos spécialités (ex: Art contemporain, Sculptures, Œuvres graphiques, etc.)"
                 class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 text-black bg-gray-200 focus:ring-gray-300 h-20"
               ></textarea>
             </div>
 
             <div>
               <label for="searchedObjects" class="block font-medium mb-2 text-gray-800">
-                Objets recherchés : 
+                Objets recherchés :
                 <span class="text-red-500">*</span>
               </label>
-              <textarea 
-                id="searchedObjects" 
-                v-model.trim="user.searchedObjects" 
-                required 
-                placeholder="Décrivez les types d'objets que vous recherchez le plus (ex: Tableaux abstraits, Sculptures en bois, Photographies d'art, etc.)" 
+              <textarea
+                id="searchedObjects"
+                v-model.trim="user.searchedObjects"
+                required
+                placeholder="Décrivez les types d'objets que vous recherchez le plus (ex: Tableaux abstraits, Sculptures en bois, Photographies d'art, etc.)"
                 class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 text-black bg-gray-200 focus:ring-gray-300 h-20"
               ></textarea>
             </div>
 
             <div>
               <label for="socialMedia" class="block font-medium mb-2 text-gray-800">Réseaux sociaux (optionnel)</label>
-              <input 
-                id="socialMedia" 
-                v-model.trim="user.socialMedia" 
-                type="text" 
-                placeholder="Instagram, Facebook, LinkedIn, etc." 
+              <input
+                id="socialMedia"
+                v-model.trim="user.socialMedia"
+                type="text"
+                placeholder="Instagram, Facebook, LinkedIn, etc."
                 class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 text-black bg-gray-200 focus:ring-gray-300"
               >
             </div>
@@ -340,12 +372,12 @@ const onSubmit = () => {
             </div>
           </div>
         </div>
-        
+
         <!-- Bouton soumettre -->
         <div class="pt-4">
           <input type="submit" value="Créer mon compte professionnel" class="w-full accent-green-800 text-white font-semibold py-3 rounded hover:bg-green-850 transition cursor-pointer">
         </div>
-        
+
         <!-- Lien connexion -->
         <div class="text-center pt-2">
           <RouterLink to="/auth/login" class="hover:text-blue-700 text-blue-800 font-bold transition">
