@@ -1,11 +1,14 @@
 const SubscriptionPlanRepository = require('../Repository/SubscriptionPlanRepository');
 
 class SubscriptionPlanService {
-  async createPlan(planData) {
-    const { name, description, price, duration_days, features } = planData;
+  // Périodes de facturation valides
+  static VALID_BILLING_PERIODS = ['monthly', 'quarterly', 'yearly', 'lifetime'];
 
-    if (!name || price === undefined || !duration_days) {
-      throw new Error('name, price et duration_days sont obligatoires');
+  async createPlan(planData) {
+    const { name, price, billing_period, features, is_active } = planData;
+
+    if (!name || price === undefined) {
+      throw new Error('name et price sont obligatoires');
     }
 
     try {
@@ -14,13 +17,16 @@ class SubscriptionPlanService {
         throw new Error('Un plan avec ce nom existe déjà');
       }
 
+      if (billing_period && !SubscriptionPlanService.VALID_BILLING_PERIODS.includes(billing_period)) {
+        throw new Error(`Période de facturation invalide. Valeurs autorisées: ${SubscriptionPlanService.VALID_BILLING_PERIODS.join(', ')}`);
+      }
+
       const newPlan = await SubscriptionPlanRepository.create({
         name,
-        description: description || null,
         price: parseFloat(price),
-        duration_days: parseInt(duration_days),
+        billing_period: billing_period || null,
         features: features || null,
-        is_active: planData.is_active !== undefined ? planData.is_active : true
+        is_active: is_active !== undefined ? is_active : true
       });
 
       return {
@@ -36,19 +42,22 @@ class SubscriptionPlanService {
   async getAllPlans(pagination = {}) {
     try {
       const { page = 1, limit = 10 } = pagination;
-      const skip = (page - 1) * limit;
+      const skip = (page - 1) * parseInt(limit);
 
-      const plans = await SubscriptionPlanRepository.findAll({ skip, take: limit });
+      const plans = await SubscriptionPlanRepository.findAll({ 
+        skip, 
+        take: parseInt(limit) 
+      });
       const total = await SubscriptionPlanRepository.count();
 
       return {
         success: true,
         data: plans,
         pagination: {
-          page,
-          limit,
+          page: parseInt(page),
+          limit: parseInt(limit),
           total,
-          pages: Math.ceil(total / limit)
+          pages: Math.ceil(total / parseInt(limit))
         }
       };
     } catch (error) {
@@ -62,7 +71,8 @@ class SubscriptionPlanService {
 
       return {
         success: true,
-        data: plans
+        data: plans,
+        count: plans.length
       };
     } catch (error) {
       throw new Error(`Erreur récupération plans actifs: ${error.message}`);
@@ -97,6 +107,15 @@ class SubscriptionPlanService {
         if (existingName) {
           throw new Error('Un plan avec ce nom existe déjà');
         }
+      }
+
+      if (updateData.billing_period && 
+          !SubscriptionPlanService.VALID_BILLING_PERIODS.includes(updateData.billing_period)) {
+        throw new Error(`Période de facturation invalide. Valeurs autorisées: ${SubscriptionPlanService.VALID_BILLING_PERIODS.join(', ')}`);
+      }
+
+      if (updateData.price !== undefined) {
+        updateData.price = parseFloat(updateData.price);
       }
 
       const updatedPlan = await SubscriptionPlanRepository.update(planId, updateData);
