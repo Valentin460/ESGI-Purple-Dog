@@ -560,9 +560,7 @@ const handleSubmit = async () => {
 .publier-objet-card {
   max-width: 900px;
   margin: 0 auto;
-  background: white;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   padding: 2.5rem;
 }
 
