@@ -24,7 +24,7 @@
                 v-model="formData.nom"
                 required
                 placeholder="Ex: Vase Art Déco en cristal"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
               />
             </div>
 
@@ -36,7 +36,7 @@
                 id="categorie"
                 v-model="formData.categorie"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
               >
                 <option value="" disabled>Sélectionnez une catégorie</option>
                 <option value="Bijoux & montres">Bijoux & montres</option>
@@ -85,7 +85,7 @@
                   placeholder="0"
                   min="0"
                   step="0.1"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
                 />
               </div>
 
@@ -101,7 +101,7 @@
                   placeholder="0"
                   min="0"
                   step="0.1"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
                 />
               </div>
 
@@ -117,7 +117,7 @@
                   placeholder="0"
                   min="0"
                   step="0.1"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
                 />
               </div>
             </div>
@@ -134,7 +134,7 @@
                 placeholder="0"
                 min="0"
                 step="0.1"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
               />
             </div>
 
@@ -148,7 +148,7 @@
                 required
                 placeholder="Décrivez votre objet en détail : époque, matériaux, état, provenance..."
                 rows="6"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 resize-y"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 resize-y"
               ></textarea>
               <span class="text-sm text-gray-500 text-right block mt-1">
                 {{ formData.description.length }} caractères
@@ -208,7 +208,7 @@
                   'aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 transition-colors',
                   formData.photos.length >= 20
                     ? 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'border-gray-300 bg-gray-50 text-gray-600 hover:border-indigo-500 hover:bg-gray-100 hover:text-indigo-600 cursor-pointer',
+                    : 'border-gray-300 bg-gray-50 text-gray-600 hover:border-primary hover:bg-gray-100 hover:text-primary cursor-pointer',
                 ]"
               >
                 <UploadIcon :size="32" />
@@ -261,7 +261,7 @@
             <button
               type="button"
               @click="$refs.documentsInput.click()"
-              class="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg bg-white text-gray-600 hover:border-indigo-500 hover:text-indigo-600 hover:bg-gray-50 transition-colors"
+              class="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg bg-white text-gray-600 hover:border-primary hover:text-primary hover:bg-gray-50 transition-colors"
             >
               <UploadIcon :size="18" />
               <span class="font-medium">Ajouter un document</span>
@@ -286,7 +286,7 @@
                 placeholder="0"
                 min="0"
                 step="0.01"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
               />
             </div>
 
@@ -302,7 +302,7 @@
                     class="hidden peer"
                   />
                   <div
-                    class="flex items-center gap-3 p-6 border-2 border-gray-200 rounded-lg peer-checked:border-indigo-500 peer-checked:bg-indigo-50 hover:border-indigo-400 transition-colors"
+                    class="flex items-center gap-3 p-6 border-2 border-gray-200 rounded-lg peer-checked:border-primary peer-checked:bg-primary hover:border-primary transition-colors"
                   >
                     <HammerIcon :size="24" class="text-gray-600 shrink-0" />
                     <div>
@@ -321,7 +321,7 @@
                     class="hidden peer"
                   />
                   <div
-                    class="flex items-center gap-3 p-6 border-2 border-gray-200 rounded-lg peer-checked:border-indigo-500 peer-checked:bg-indigo-50 hover:border-indigo-400 transition-colors"
+                    class="flex items-center gap-3 p-6 border-2 border-gray-200 rounded-lg peer-checked:border-primary peer-checked:bg-primary hover:border-primary transition-colors"
                   >
                     <ZapIcon :size="24" class="text-gray-600 shrink-0" />
                     <div>
@@ -406,7 +406,7 @@
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="px-6 py-3 bg-indigo-600 text-white rounded-md font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            class="px-6 py-3 bg-primary text-white rounded-md font-semibold hover:bg-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {{ isSubmitting ? 'Publication en cours...' : "Publier l'objet" }}
           </button>
