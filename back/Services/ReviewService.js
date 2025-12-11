@@ -3,10 +3,14 @@ const ItemRepository = require('../Repository/ItemRepository');
 
 class ReviewService {
   async createReview(reviewData) {
-    const { reviewer_id, reviewee_id, item_id, rating, comment } = reviewData;
+    const { reviewer_id, reviewee_id, item_id, rating, comment, nps_score } = reviewData;
 
     if (!reviewer_id || !reviewee_id || !rating) {
       throw new Error('reviewer_id, reviewee_id et rating sont obligatoires');
+    }
+
+    if (parseInt(reviewer_id) === parseInt(reviewee_id)) {
+      throw new Error('Vous ne pouvez pas vous évaluer vous-même');
     }
 
     if (rating < 1 || rating > 5) {
@@ -14,10 +18,6 @@ class ReviewService {
     }
 
     try {
-      if (parseInt(reviewer_id) === parseInt(reviewee_id)) {
-        throw new Error('Vous ne pouvez pas vous évaluer vous-même');
-      }
-
       if (item_id) {
         const item = await ItemRepository.findById(item_id);
         if (!item) {
@@ -26,11 +26,12 @@ class ReviewService {
       }
 
       const newReview = await ReviewRepository.create({
-        reviewer_id: parseInt(reviewer_id),
-        reviewee_id: parseInt(reviewee_id),
+        reviewer_id,
+        reviewee_id,
         item_id: item_id ? parseInt(item_id) : null,
-        rating: parseInt(rating),
-        comment: comment || null
+        rating,
+        comment: comment || null,
+        nps_score
       });
 
       return {
