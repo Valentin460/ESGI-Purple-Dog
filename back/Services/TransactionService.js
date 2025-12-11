@@ -1,18 +1,25 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const TransactionRepository = require('../Repository/TransactionRepository');
-const ItemRepository = require('../Repository/ItemRepository');
 
 class TransactionService {
   async createTransaction(transactionData) {
-    const { item_id, buyer_id, seller_id, total_amount, payment_method } = transactionData;
+    const { 
+      item_id, 
+      buyer_id, 
+      seller_id, 
+      item_price, 
+      shipping_cost,
+      payment_method 
+    } = transactionData;
 
-    if (!item_id || !buyer_id || !seller_id || !total_amount || !payment_method) {
-      throw new Error('item_id, buyer_id, seller_id, total_amount et payment_method sont obligatoires');
+    if (!item_id || !buyer_id || !seller_id || !item_price) {
+      throw new Error('item_id, buyer_id, seller_id et item_price sont obligatoires');
     }
 
     try {
       const result = await prisma.$transaction(async (tx) => {
+        // Vérifier que l'item existe
         const item = await tx.item.findUnique({
           where: { id: parseInt(item_id) }
         });
@@ -25,10 +32,22 @@ class TransactionService {
           throw new Error('Cet item est déjà vendu');
         }
 
+        // Vérifier que buyer et seller existent
+        const buyer = await tx.user.findUnique({ where: { id: parseInt(buyer_id) } });
+        if (!buyer) {
+          throw new Error('Acheteur non trouvé');
+        }
+
+        const seller = await tx.user.findUnique({ where: { id: parseInt(seller_id) } });
+        if (!seller) {
+          throw new Error('Vendeur non trouvé');
+        }
+
         if (parseInt(buyer_id) === parseInt(seller_id)) {
           throw new Error('L\'acheteur et le vendeur ne peuvent pas être la même personne');
         }
 
+        // Vérifier si une transaction existe déjà pour cet item
         const existingTransaction = await tx.transaction.findFirst({
           where: { item_id: parseInt(item_id) }
         });
@@ -37,33 +56,49 @@ class TransactionService {
           throw new Error('Une transaction existe déjà pour cet item');
         }
 
-        const platformFee = parseFloat(total_amount) * 0.10; // 10% de commission
-        const sellerAmount = parseFloat(total_amount) - platformFee;
+        // Calculer les frais selon le schema
+        const itemPriceValue = parseFloat(item_price);
+        const shippingCostValue = shipping_cost ? parseFloat(shipping_cost) : 0;
+        const platformFeeBuyer = itemPriceValue * 0.03;  // 3% commission acheteur
+        const platformFeeSeller = itemPriceValue * 0.02; // 2% commission vendeur
+        const totalBuyerPays = itemPriceValue + shippingCostValue + platformFeeBuyer;
+        const totalSellerReceives = itemPriceValue - platformFeeSeller;
 
         const newTransaction = await tx.transaction.create({
           data: {
             item_id: parseInt(item_id),
             buyer_id: parseInt(buyer_id),
             seller_id: parseInt(seller_id),
-            total_amount: parseFloat(total_amount),
-            platform_fee: platformFee,
-            seller_amount: sellerAmount,
-            payment_method,
-            payment_status: 'PENDING',
-            status: 'PENDING',
-            shipping_address: transactionData.shipping_address || null,
-            tracking_number: transactionData.tracking_number || null
+            item_price: itemPriceValue,
+            shipping_cost: shippingCostValue,
+            platform_fee_buyer: platformFeeBuyer,
+            platform_fee_seller: platformFeeSeller,
+            total_buyer_pays: totalBuyerPays,
+            total_seller_receives: totalSellerReceives,
+            status: 'PENDING_PAYMENT',
+            payment_method: payment_method || null
           },
           include: {
-            buyer: true,
-            seller: true,
+            buyer: {
+              select: {
+                id: true,
+                email: true
+              }
+            },
+            seller: {
+              select: {
+                id: true,
+                email: true
+              }
+            },
             item: true
           }
         });
 
+        // Mettre à jour le statut de l'item
         await tx.item.update({
           where: { id: parseInt(item_id) },
-          data: { status: 'PENDING_PAYMENT' }
+          data: { status: 'SOLD' }
         });
 
         return newTransaction;
@@ -86,7 +121,6 @@ class TransactionService {
 
       const where = {};
       if (filters.status) where.status = filters.status;
-      if (filters.payment_status) where.payment_status = filters.payment_status;
       if (filters.buyer_id) where.buyer_id = parseInt(filters.buyer_id);
       if (filters.seller_id) where.seller_id = parseInt(filters.seller_id);
 
@@ -170,39 +204,38 @@ class TransactionService {
         throw new Error('Transaction non trouvée');
       }
 
-      const validStatuses = ['PENDING', 'PAID', 'FAILED', 'REFUNDED'];
-      if (!validStatuses.includes(paymentStatus)) {
-        throw new Error(`Statut de paiement invalide. Valeurs autorisées: ${validStatuses.join(', ')}`);
+      // Mapping du statut de paiement vers TransactionStatus
+      const statusMapping = {
+        'PAID': 'PAYMENT_RECEIVED',
+        'PENDING': 'PENDING_PAYMENT',
+        'FAILED': 'CANCELLED',
+        'REFUNDED': 'REFUNDED'
+      };
+
+      const newStatus = statusMapping[paymentStatus];
+      if (!newStatus) {
+        throw new Error(`Statut de paiement invalide. Valeurs autorisées: ${Object.keys(statusMapping).join(', ')}`);
       }
 
       const result = await prisma.$transaction(async (tx) => {
         const updateData = {
-          payment_status: paymentStatus
+          status: newStatus
         };
 
         if (paymentStatus === 'PAID') {
-          updateData.paid_at = new Date();
-          updateData.status = 'PROCESSING';
-
-          await tx.item.update({
-            where: { id: transaction.item_id },
-            data: { status: 'SOLD' }
-          });
-        }
-
-        if (paymentStatus === 'FAILED') {
-          await tx.item.update({
-            where: { id: transaction.item_id },
-            data: { status: 'PUBLISHED' }
-          });
+          updateData.payment_date = new Date();
         }
 
         const updatedTransaction = await tx.transaction.update({
           where: { id: parseInt(transactionId) },
           data: updateData,
           include: {
-            buyer: true,
-            seller: true,
+            buyer: {
+              select: { id: true, email: true }
+            },
+            seller: {
+              select: { id: true, email: true }
+            },
             item: true
           }
         });
@@ -227,23 +260,25 @@ class TransactionService {
         throw new Error('Transaction non trouvée');
       }
 
-      const validStatuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'COMPLETED', 'CANCELLED', 'REFUNDED'];
+      const validStatuses = [
+        'PENDING_PAYMENT',
+        'PAYMENT_RECEIVED',
+        'PREPARING_SHIPMENT',
+        'SHIPPED',
+        'DELIVERED',
+        'COMPLETED',
+        'CANCELLED',
+        'REFUNDED'
+      ];
+
       if (!validStatuses.includes(status)) {
         throw new Error(`Statut invalide. Valeurs autorisées: ${validStatuses.join(', ')}`);
       }
 
       const updateData = { status };
 
-      if (status === 'SHIPPED') {
-        updateData.shipped_at = new Date();
-      }
-
-      if (status === 'DELIVERED') {
-        updateData.delivered_at = new Date();
-      }
-
       if (status === 'COMPLETED') {
-        updateData.completed_at = new Date();
+        updateData.funds_released_at = new Date();
       }
 
       const updatedTransaction = await TransactionRepository.update(transactionId, updateData);
@@ -266,9 +301,8 @@ class TransactionService {
       }
 
       const updatedTransaction = await TransactionRepository.update(transactionId, {
-        tracking_number: trackingNumber,
-        status: 'SHIPPED',
-        shipped_at: new Date()
+        shipment_tracking: trackingNumber,
+        status: 'SHIPPED'
       });
 
       return {
@@ -288,7 +322,7 @@ class TransactionService {
       return {
         success: true,
         data: {
-          seller_id: sellerId,
+          seller_id: parseInt(sellerId),
           total_revenue: revenue
         }
       };
@@ -312,16 +346,20 @@ class TransactionService {
         const updatedTransaction = await tx.transaction.update({
           where: { id: parseInt(transactionId) },
           data: {
-            status: 'CANCELLED',
-            cancellation_reason: reason || null
+            status: 'CANCELLED'
           },
           include: {
-            buyer: true,
-            seller: true,
+            buyer: {
+              select: { id: true, email: true }
+            },
+            seller: {
+              select: { id: true, email: true }
+            },
             item: true
           }
         });
 
+        // Remettre l'item en vente
         await tx.item.update({
           where: { id: transaction.item_id },
           data: { status: 'PUBLISHED' }

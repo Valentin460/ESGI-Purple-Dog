@@ -6,19 +6,42 @@ class TransactionRepository {
     return await prisma.transaction.create({
       data,
       include: {
-        buyer: true,
-        seller: true,
+        buyer: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        seller: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
         item: true
       }
     });
   }
 
   async findAll(options = {}) {
+    const { skip = 0, take = 10, where = {} } = options;
     return await prisma.transaction.findMany({
-      ...options,
+      skip: parseInt(skip),
+      take: parseInt(take),
+      where,
       include: {
-        buyer: true,
-        seller: true,
+        buyer: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        seller: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
         item: true
       },
       orderBy: { created_at: 'desc' }
@@ -29,8 +52,18 @@ class TransactionRepository {
     return await prisma.transaction.findUnique({
       where: { id: parseInt(id) },
       include: {
-        buyer: true,
-        seller: true,
+        buyer: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        seller: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
         item: {
           include: {
             categories: {
@@ -53,8 +86,18 @@ class TransactionRepository {
         ]
       },
       include: {
-        buyer: true,
-        seller: true,
+        buyer: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        seller: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
         item: true
       },
       orderBy: { created_at: 'desc' }
@@ -65,7 +108,12 @@ class TransactionRepository {
     return await prisma.transaction.findMany({
       where: { buyer_id: parseInt(buyerId) },
       include: {
-        seller: true,
+        seller: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
         item: true
       },
       orderBy: { created_at: 'desc' }
@@ -76,7 +124,12 @@ class TransactionRepository {
     return await prisma.transaction.findMany({
       where: { seller_id: parseInt(sellerId) },
       include: {
-        buyer: true,
+        buyer: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
         item: true
       },
       orderBy: { created_at: 'desc' }
@@ -87,8 +140,18 @@ class TransactionRepository {
     return await prisma.transaction.findMany({
       where: { status },
       include: {
-        buyer: true,
-        seller: true,
+        buyer: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        seller: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
         item: true
       },
       orderBy: { created_at: 'desc' }
@@ -99,8 +162,18 @@ class TransactionRepository {
     return await prisma.transaction.findFirst({
       where: { item_id: parseInt(itemId) },
       include: {
-        buyer: true,
-        seller: true,
+        buyer: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        seller: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
         item: true
       }
     });
@@ -111,8 +184,18 @@ class TransactionRepository {
       where: { id: parseInt(id) },
       data,
       include: {
-        buyer: true,
-        seller: true,
+        buyer: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        seller: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
         item: true
       }
     });
@@ -130,8 +213,7 @@ class TransactionRepository {
 
   async getTotalRevenue(sellerId = null) {
     const where = {
-      status: 'COMPLETED',
-      payment_status: 'PAID'
+      status: 'COMPLETED'
     };
 
     if (sellerId) {
@@ -141,11 +223,11 @@ class TransactionRepository {
     const result = await prisma.transaction.aggregate({
       where,
       _sum: {
-        total_amount: true
+        total_seller_receives: true
       }
     });
 
-    return result._sum.total_amount || 0;
+    return result._sum.total_seller_receives || 0;
   }
 }
 
