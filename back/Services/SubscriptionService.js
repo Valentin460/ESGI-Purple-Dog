@@ -1,19 +1,34 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const SubscriptionRepository = require('../Repository/SubscriptionRepository');
-const SubscriptionPlanRepository = require('../Repository/SubscriptionPlanRepository');
-const UserRepository = require('../Repository/UserRepository');
 
 class SubscriptionService {
-  async createSubscription(subscriptionData) {
-    const { user_id, plan_id, payment_method } = subscriptionData;
+  // Statuts valides selon le schema.prisma
+  static VALID_STATUSES = ['TRIAL', 'ACTIVE', 'PAST_DUE', 'CANCELED', 'EXPIRED'];
 
-    if (!user_id || !plan_id || !payment_method) {
-      throw new Error('user_id, plan_id et payment_method sont obligatoires');
+  // Durée des périodes de facturation en jours
+  static BILLING_PERIODS = {
+    'monthly': 30,
+    'quarterly': 90,
+    'yearly': 365,
+    'lifetime': 36500  // ~100 ans
+  };
+
+  async createSubscription(subscriptionData) {
+    const { 
+      user_id, 
+      plan_id, 
+      stripe_subscription_id,
+      start_trial = false 
+    } = subscriptionData;
+
+    if (!user_id || !plan_id) {
+      throw new Error('user_id et plan_id sont obligatoires');
     }
 
     try {
       const result = await prisma.$transaction(async (tx) => {
+        // Vérifier que l'utilisateur existe
         const user = await tx.user.findUnique({
           where: { id: parseInt(user_id) }
         });
@@ -22,6 +37,7 @@ class SubscriptionService {
           throw new Error('Utilisateur non trouvé');
         }
 
+        // Vérifier que le plan existe et est actif
         const plan = await tx.subscriptionPlan.findUnique({
           where: { id: parseInt(plan_id) }
         });
@@ -34,13 +50,15 @@ class SubscriptionService {
           throw new Error('Ce plan n\'est pas disponible');
         }
 
+        // Vérifier si l'utilisateur a déjà un abonnement actif
         const activeSubscription = await tx.subscription.findFirst({
           where: {
             user_id: parseInt(user_id),
-            status: 'ACTIVE',
-            end_date: {
-              gte: new Date()
-            }
+            status: { in: ['TRIAL', 'ACTIVE'] },
+            OR: [
+              { ends_at: null },
+              { ends_at: { gte: new Date() } }
+            ]
           }
         });
 
@@ -48,22 +66,43 @@ class SubscriptionService {
           throw new Error('Cet utilisateur a déjà un abonnement actif');
         }
 
-        const startDate = new Date();
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + plan.duration_days);
+        // Calculer les dates
+        const startedAt = new Date();
+        let endsAt = null;
+        let trialEndsAt = null;
+        let status = 'ACTIVE';
+
+        // Période d'essai d'1 mois pour les pros
+        if (start_trial && user.user_type === 'professional') {
+          trialEndsAt = new Date();
+          trialEndsAt.setDate(trialEndsAt.getDate() + 30);
+          status = 'TRIAL';
+        }
+
+        // Calculer la date de fin selon la période de facturation
+        if (plan.billing_period && SubscriptionService.BILLING_PERIODS[plan.billing_period]) {
+          endsAt = new Date();
+          endsAt.setDate(endsAt.getDate() + SubscriptionService.BILLING_PERIODS[plan.billing_period]);
+        }
 
         const newSubscription = await tx.subscription.create({
           data: {
             user_id: parseInt(user_id),
             plan_id: parseInt(plan_id),
-            start_date: startDate,
-            end_date: endDate,
-            status: 'ACTIVE',
-            payment_method,
-            auto_renew: subscriptionData.auto_renew || false
+            status,
+            started_at: startedAt,
+            ends_at: endsAt,
+            trial_ends_at: trialEndsAt,
+            stripe_subscription_id: stripe_subscription_id || null
           },
           include: {
-            user: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                user_type: true
+              }
+            },
             plan: true
           }
         });
@@ -84,23 +123,27 @@ class SubscriptionService {
   async getAllSubscriptions(filters = {}, pagination = {}) {
     try {
       const { page = 1, limit = 10 } = pagination;
-      const skip = (page - 1) * limit;
+      const skip = (page - 1) * parseInt(limit);
 
       const where = {};
       if (filters.status) where.status = filters.status;
       if (filters.user_id) where.user_id = parseInt(filters.user_id);
 
-      const subscriptions = await SubscriptionRepository.findAll({ skip, take: limit, where });
+      const subscriptions = await SubscriptionRepository.findAll({ 
+        skip, 
+        take: parseInt(limit), 
+        where 
+      });
       const total = await SubscriptionRepository.count(where);
 
       return {
         success: true,
         data: subscriptions,
         pagination: {
-          page,
-          limit,
+          page: parseInt(page),
+          limit: parseInt(limit),
           total,
-          pages: Math.ceil(total / limit)
+          pages: Math.ceil(total / parseInt(limit))
         }
       };
     } catch (error) {
@@ -130,7 +173,8 @@ class SubscriptionService {
 
       return {
         success: true,
-        data: subscriptions
+        data: subscriptions,
+        count: subscriptions.length
       };
     } catch (error) {
       throw new Error(`Erreur récupération abonnements utilisateur: ${error.message}`);
@@ -149,6 +193,22 @@ class SubscriptionService {
         };
       }
 
+      // Vérifier si la période d'essai est terminée
+      if (subscription.status === 'TRIAL' && subscription.trial_ends_at) {
+        if (new Date() > new Date(subscription.trial_ends_at)) {
+          // Mettre à jour le statut si la période d'essai est expirée
+          await SubscriptionRepository.update(subscription.id, {
+            status: 'EXPIRED'
+          });
+          
+          return {
+            success: true,
+            message: 'Période d\'essai expirée',
+            data: null
+          };
+        }
+      }
+
       return {
         success: true,
         data: subscription
@@ -165,14 +225,17 @@ class SubscriptionService {
         throw new Error('Abonnement non trouvé');
       }
 
-      if (subscription.status === 'CANCELLED') {
+      if (subscription.status === 'CANCELED') {
         throw new Error('Cet abonnement est déjà annulé');
       }
 
+      if (subscription.status === 'EXPIRED') {
+        throw new Error('Cet abonnement est déjà expiré');
+      }
+
       const updatedSubscription = await SubscriptionRepository.update(subscriptionId, {
-        status: 'CANCELLED',
-        cancelled_at: new Date(),
-        auto_renew: false
+        status: 'CANCELED',
+        ends_at: new Date()  // L'abonnement se termine immédiatement
       });
 
       return {
@@ -192,17 +255,34 @@ class SubscriptionService {
         throw new Error('Abonnement non trouvé');
       }
 
-      const plan = await SubscriptionPlanRepository.findById(subscription.plan_id);
+      const plan = subscription.plan;
       if (!plan) {
         throw new Error('Plan non trouvé');
       }
 
-      const newEndDate = new Date(subscription.end_date);
-      newEndDate.setDate(newEndDate.getDate() + plan.duration_days);
+      if (!plan.is_active) {
+        throw new Error('Ce plan n\'est plus disponible');
+      }
+
+      // Calculer la nouvelle date de fin
+      let newEndsAt = new Date();
+      
+      // Si l'abonnement n'est pas encore expiré, prolonger à partir de la date de fin actuelle
+      if (subscription.ends_at && new Date(subscription.ends_at) > new Date()) {
+        newEndsAt = new Date(subscription.ends_at);
+      }
+
+      if (plan.billing_period && SubscriptionService.BILLING_PERIODS[plan.billing_period]) {
+        newEndsAt.setDate(newEndsAt.getDate() + SubscriptionService.BILLING_PERIODS[plan.billing_period]);
+      } else {
+        // Par défaut, renouveler pour 30 jours
+        newEndsAt.setDate(newEndsAt.getDate() + 30);
+      }
 
       const updatedSubscription = await SubscriptionRepository.update(subscriptionId, {
-        end_date: newEndDate,
-        status: 'ACTIVE'
+        ends_at: newEndsAt,
+        status: 'ACTIVE',
+        trial_ends_at: null  // Supprimer la période d'essai si elle existait
       });
 
       return {
@@ -222,17 +302,41 @@ class SubscriptionService {
         throw new Error('Abonnement non trouvé');
       }
 
+      // Note: Le schema.prisma n'a pas de champ auto_renew
+      // On pourrait stocker cette info dans Stripe ou ajouter le champ
+
+      return {
+        success: true,
+        message: 'Fonctionnalité de renouvellement automatique gérée par Stripe',
+        data: subscription
+      };
+    } catch (error) {
+      throw new Error(`Erreur modification renouvellement automatique: ${error.message}`);
+    }
+  }
+
+  async updateSubscriptionStatus(subscriptionId, status) {
+    try {
+      const subscription = await SubscriptionRepository.findById(subscriptionId);
+      if (!subscription) {
+        throw new Error('Abonnement non trouvé');
+      }
+
+      if (!SubscriptionService.VALID_STATUSES.includes(status)) {
+        throw new Error(`Statut invalide. Valeurs autorisées: ${SubscriptionService.VALID_STATUSES.join(', ')}`);
+      }
+
       const updatedSubscription = await SubscriptionRepository.update(subscriptionId, {
-        auto_renew: !subscription.auto_renew
+        status
       });
 
       return {
         success: true,
-        message: `Renouvellement automatique ${updatedSubscription.auto_renew ? 'activé' : 'désactivé'}`,
+        message: 'Statut mis à jour',
         data: updatedSubscription
       };
     } catch (error) {
-      throw new Error(`Erreur modification renouvellement automatique: ${error.message}`);
+      throw new Error(`Erreur mise à jour statut: ${error.message}`);
     }
   }
 

@@ -6,17 +6,32 @@ class SubscriptionRepository {
     return await prisma.subscription.create({
       data,
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            user_type: true
+          }
+        },
         plan: true
       }
     });
   }
 
   async findAll(options = {}) {
+    const { skip = 0, take = 10, where = {} } = options;
     return await prisma.subscription.findMany({
-      ...options,
+      skip: parseInt(skip),
+      take: parseInt(take),
+      where,
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            user_type: true
+          }
+        },
         plan: true
       },
       orderBy: { created_at: 'desc' }
@@ -27,7 +42,13 @@ class SubscriptionRepository {
     return await prisma.subscription.findUnique({
       where: { id: parseInt(id) },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            user_type: true
+          }
+        },
         plan: true
       }
     });
@@ -47,10 +68,11 @@ class SubscriptionRepository {
     return await prisma.subscription.findFirst({
       where: {
         user_id: parseInt(userId),
-        status: 'ACTIVE',
-        end_date: {
-          gte: new Date()
-        }
+        status: { in: ['TRIAL', 'ACTIVE'] },
+        OR: [
+          { ends_at: null },
+          { ends_at: { gte: new Date() } }
+        ]
       },
       include: {
         plan: true
@@ -62,10 +84,52 @@ class SubscriptionRepository {
     return await prisma.subscription.findMany({
       where: { status },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            user_type: true
+          }
+        },
         plan: true
       },
       orderBy: { created_at: 'desc' }
+    });
+  }
+
+  async findExpired() {
+    return await prisma.subscription.findMany({
+      where: {
+        status: { in: ['TRIAL', 'ACTIVE'] },
+        ends_at: { lt: new Date() }
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        plan: true
+      }
+    });
+  }
+
+  async findTrialExpired() {
+    return await prisma.subscription.findMany({
+      where: {
+        status: 'TRIAL',
+        trial_ends_at: { lt: new Date() }
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        plan: true
+      }
     });
   }
 
@@ -74,7 +138,13 @@ class SubscriptionRepository {
       where: { id: parseInt(id) },
       data,
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            user_type: true
+          }
+        },
         plan: true
       }
     });
