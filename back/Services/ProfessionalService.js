@@ -245,6 +245,40 @@ class ProfessionalService {
       throw new Error(`Erreur suppression profil professionnel: ${error.message}`);
     }
   }
+
+  // SEARCH - Rechercher des professionnels
+async searchProfessionals(searchTerm) {
+  try {
+    const professionals = await prisma.professional.findMany({
+      where: {
+        OR: [
+          { first_name: { contains: searchTerm, mode: 'insensitive' } },
+          { last_name: { contains: searchTerm, mode: 'insensitive' } },
+          { company_name: { contains: searchTerm, mode: 'insensitive' } },
+          { specialties: { contains: searchTerm, mode: 'insensitive' } }
+        ]
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            is_active: true
+          }
+        }
+      },
+      take: 20
+    });
+
+    return {
+      success: true,
+      data: professionals,
+      count: professionals.length
+    };
+  } catch (error) {
+    throw new Error(`Erreur recherche professionnels: ${error.message}`);
+  }
+}
 }
 
 module.exports = new ProfessionalService();

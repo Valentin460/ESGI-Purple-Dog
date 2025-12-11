@@ -175,6 +175,35 @@ class ConversationService {
       throw new Error(`Erreur suppression conversation: ${error.message}`);
     }
   }
+
+  async markAsRead(conversationId, userId) {
+    try {
+      const convId = parseInt(conversationId);
+      const uId = parseInt(userId);
+
+      // Vérifier que la conversation existe
+      const conversation = await ConversationRepository.findById(convId);
+      if (!conversation) {
+        throw new Error('Conversation non trouvée');
+      }
+
+      // Vérifier que l'utilisateur fait partie de la conversation
+      if (conversation.buyer_id !== uId && conversation.seller_id !== uId) {
+        throw new Error('Utilisateur non autorisé à accéder à cette conversation');
+      }
+
+      // Marquer les messages comme lus
+      const result = await ConversationRepository.markMessagesAsRead(convId, uId);
+
+      return {
+        success: true,
+        message: 'Messages marqués comme lus',
+        data: result
+      };
+    } catch (error) {
+      throw new Error(`Erreur marquage messages lus: ${error.message}`);
+    }
+  }
 }
 
 module.exports = new ConversationService();

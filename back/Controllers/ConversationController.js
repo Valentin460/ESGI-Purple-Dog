@@ -89,6 +89,19 @@ class ConversationController {
       });
     }
   }
+
+  async markAsRead(req, res) {
+    try {
+      const { id, userId } = req.params;
+      const result = await ConversationService.markAsRead(id, userId);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
 }
 
 module.exports = new ConversationController();

@@ -28,6 +28,20 @@ const ItemController = {
     }
   },
 
+  // GET /items/all - Récupérer TOUS les objets (publiés ou non)
+  getAllItemsAdmin: async (req, res) => {
+    try {
+      const { page = 1, limit = 10 } = req.query;
+      const result = await ItemService.getAllItemsAdmin({ page: parseInt(page), limit: parseInt(limit) });
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+  },
+
   // GET /items/seller/:seller_id - Récupérer les objets d'un vendeur
   getSellerItems: async (req, res) => {
     try {

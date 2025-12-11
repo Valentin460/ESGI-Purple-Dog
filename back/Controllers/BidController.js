@@ -15,10 +15,10 @@ class BidController {
 
   async getAllBids(req, res) {
     try {
-      const { page, limit, auction_id, bidder_id } = req.query;
+      const { page = 1, limit = 10, auction_id, bidder_id } = req.query;
       const result = await BidService.getAllBids(
         { auction_id, bidder_id },
-        { page, limit }
+        { page: parseInt(page), limit: parseInt(limit) }  // ✅ Convertir en Int
       );
       res.status(200).json(result);
     } catch (error) {
@@ -83,6 +83,32 @@ class BidController {
       res.status(200).json(result);
     } catch (error) {
       res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  async getBidsByUser(req, res) {
+    try {
+      const { userId } = req.params;
+      const result = await BidService.getBidsByUser(userId);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  }
+
+  async getWinningBid(req, res) {
+    try {
+      const { auctionId } = req.params;
+      const result = await BidService.getWinningBid(auctionId);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(404).json({
         success: false,
         error: error.message
       });

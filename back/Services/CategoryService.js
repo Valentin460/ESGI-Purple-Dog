@@ -1,12 +1,26 @@
 const CategoryRepository = require('../Repository/CategoryRepository');
 
-class CategoryService {
-  async createCategory(categoryData) {
-    const { name, slug, description } = categoryData;
+// Fonction utilitaire pour générer un slug
+function generateSlug(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Retire les accents
+    .replace(/[^a-z0-9]+/g, '-')     // Remplace les caractères spéciaux par des tirets
+    .replace(/^-+|-+$/g, '');        // Retire les tirets au début et à la fin
+}
 
-    if (!name || !slug) {
-      throw new Error('name et slug sont obligatoires');
+class CategoryService {
+
+  async createCategory(categoryData) {
+    const { name, description } = categoryData;
+
+    if (!name) {
+      throw new Error('name est obligatoire');
     }
+
+    // Générer le slug automatiquement si non fourni
+    const slug = categoryData.slug || generateSlug(name);
 
     try {
       const existingCategory = await CategoryRepository.findBySlug(slug);
@@ -161,6 +175,42 @@ class CategoryService {
       };
     } catch (error) {
       throw new Error(`Erreur suppression catégorie: ${error.message}`);
+    }
+  }
+
+  async getRootCategories() {
+    try {
+      const categories = await CategoryRepository.findRootCategories();
+      return {
+        success: true,
+        data: categories
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération catégories racines: ${error.message}`);
+    }
+  }
+
+  async getChildrenCategories(parentId) {
+    try {
+      const categories = await CategoryRepository.findByParentId(parentId);
+      return {
+        success: true,
+        data: categories
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération sous-catégories: ${error.message}`);
+    }
+  }
+
+  async getCategoryTree() {
+    try {
+      const categories = await CategoryRepository.findCategoryTree();
+      return {
+        success: true,
+        data: categories
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération arbre catégories: ${error.message}`);
     }
   }
 }

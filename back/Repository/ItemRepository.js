@@ -57,6 +57,31 @@ class ItemRepository {
     }
   }
 
+  // Récupérer TOUS les items (publiés ou non)
+
+  async findAllAdmin(options = {}) {
+  const { skip = 0, take = 10 } = options;
+  
+  return await prisma.item.findMany({
+    skip,
+    take,
+    include: {
+      seller: {
+        select: {
+          id: true,
+          email: true
+        }
+      },
+      categories: {
+        include: {
+          category: true
+        }
+      }
+    },
+    orderBy: { created_at: 'desc' }
+  });
+}
+
   // READ - Par ID
   async findById(id) {
     try {
@@ -194,6 +219,11 @@ class ItemRepository {
       throw new Error(`Erreur ajout catégorie: ${error.message}`);
     }
   }
+
+  // Compter TOUS les items
+async countAll() {
+  return await prisma.item.count();
+}
 
   // Retirer une catégorie
   async removeCategory(itemId, categoryId) {

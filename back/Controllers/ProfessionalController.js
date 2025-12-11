@@ -99,6 +99,26 @@ const ProfessionalController = {
         error: error.message
       });
     }
+  },
+
+  // GET /professionals/search - Rechercher des professionnels
+  searchProfessionals: async (req, res) => {
+    try {
+      const { q } = req.query;
+      if (!q || q.trim().length < 2) {
+        return res.status(400).json({
+          success: false,
+          error: 'Le terme de recherche doit contenir au moins 2 caractères'
+        });
+      }
+      const result = await ProfessionalService.searchProfessionals(q);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
   }
 };
 

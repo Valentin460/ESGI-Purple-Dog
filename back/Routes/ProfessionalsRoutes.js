@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const ProfessionalController = require('../Controllers/ProfessionalController');
 
+
+router.get('/search', ProfessionalController.searchProfessionals);
 // POST - Créer
 router.post('/', ProfessionalController.createProfessional);
 

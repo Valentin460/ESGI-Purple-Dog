@@ -159,6 +159,19 @@ class BidService {
     }
   }
 
+  async getBidsByUser(userId) {
+    try {
+      const bids = await BidRepository.findByUserId(parseInt(userId));
+      return {
+        success: true,
+        data: bids,
+        count: bids.length
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération enchères utilisateur: ${error.message}`);
+    }
+  }
+
   async getHighestBid(auctionId) {
     try {
       const bid = await BidRepository.findHighestBid(auctionId);
@@ -172,6 +185,23 @@ class BidService {
       };
     } catch (error) {
       throw new Error(`Erreur récupération enchère la plus haute: ${error.message}`);
+    }
+  }
+
+  async getWinningBid(auctionId) {
+    try {
+      const bid = await BidRepository.findWinningBid(parseInt(auctionId));
+      
+      if (!bid) {
+        throw new Error('Aucune enchère gagnante trouvée pour cette auction');
+      }
+
+      return {
+        success: true,
+        data: bid
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération enchère gagnante: ${error.message}`);
     }
   }
 

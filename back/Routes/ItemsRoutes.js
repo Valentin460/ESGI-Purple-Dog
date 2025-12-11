@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const ItemController = require('../Controllers/ItemController');
 
+
+router.get('/all', ItemController.getAllItemsAdmin);  // TOUS les items (admin)
 // GET - Recherche globale (avant les routes paramétriques)
 router.get('/search', ItemController.searchItems);
 

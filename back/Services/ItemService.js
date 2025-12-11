@@ -53,6 +53,31 @@ class ItemService {
     }
   }
 
+  async getAllItemsAdmin(pagination = {}) {
+  try {
+    const { page = 1, limit = 10 } = pagination;
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+      ItemRepository.findAllAdmin({ skip, take: limit }),
+      ItemRepository.countAll()
+    ]);
+
+    return {
+      success: true,
+      data: items,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    };
+  } catch (error) {
+    throw new Error(`Erreur récupération tous les items: ${error.message}`);
+  }
+}
+
   async getSellerItems(sellerId, filters = {}) {
     try {
       const items = await ItemRepository.findBySellerId(sellerId, filters);

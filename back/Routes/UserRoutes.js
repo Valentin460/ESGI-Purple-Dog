@@ -4,34 +4,41 @@ const UserController = require('../Controllers/UserController');
 
 // 🔑 ROUTES SPÉCIFIQUES D'ABORD (avant les paramétriques)
 
+// GET - Routes spéciales
+router.get('/active', UserController.getActiveUsers);
+router.get('/count', UserController.getUserCount);
+router.get('/search', UserController.searchUsers);
+router.get('/type/:type', UserController.getUsersByType);
+router.get('/email/:email', UserController.getUserByEmail);
+
 // POST - Créer un utilisateur
 router.post('/', UserController.createUser);
 
 // GET - Tous les utilisateurs
 router.get('/', UserController.getAllUsers);
 
-// POST - Vérifier
-// router.post('/:id/verify', UserController.verifyUser);
-
 // POST - Désactiver
 router.post('/:id/deactivate', UserController.deactivateUser);
 
-// PUT - Mettre à jour profil individu
-// router.put('/:id/individual', UserController.updateIndividual);
-
-// PUT - Mettre à jour profil professionnel
-// router.put('/:id/professional', UserController.updateProfessional);
-
 // 🔑 ROUTES PARAMÉTRIQUES À LA FIN
-
-// GET - Par email (avant /:id pour éviter la capture)
-router.get('/email/:email', UserController.getUserByEmail);
 
 // GET - Par ID
 router.get('/:id', UserController.getUserById);
 
+// GET - Stats utilisateur
+router.get('/:id/stats', UserController.getUserStats);
+
 // PUT - Mettre à jour utilisateur
 router.put('/:id', UserController.updateUser);
+
+// PATCH - Mot de passe
+router.patch('/:id/password', UserController.updatePassword);
+
+// PATCH - Toggle statut
+router.patch('/:id/toggle-status', UserController.toggleUserStatus);
+
+// PATCH - Activer
+router.patch('/:id/activate', UserController.activateUser);
 
 // DELETE - Supprimer
 router.delete('/:id', UserController.deleteUser);

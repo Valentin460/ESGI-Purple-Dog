@@ -57,6 +57,40 @@ class CategoryRepository {
       orderBy: { name: 'asc' }
     });
   }
+
+  async findRootCategories() {
+    return await prisma.category.findMany({
+      where: {
+        parent_id: null
+      },
+      include: {
+        children: true
+      }
+    });
+  }
+
+  async findByParentId(parentId) {
+    return await prisma.category.findMany({
+      where: {
+        parent_id: parseInt(parentId)
+      }
+    });
+  }
+
+  async findCategoryTree() {
+    return await prisma.category.findMany({
+      where: {
+        parent_id: null
+      },
+      include: {
+        children: {
+          include: {
+            children: true
+          }
+        }
+      }
+    });
+  }
 }
 
 module.exports = new CategoryRepository();

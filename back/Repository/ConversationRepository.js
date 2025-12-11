@@ -103,6 +103,20 @@ class ConversationRepository {
   async count(where = {}) {
     return await prisma.conversation.count({ where });
   }
+
+  async markMessagesAsRead(conversationId, userId) {
+    return await prisma.message.updateMany({
+      where: {
+        conversation_id: parseInt(conversationId),
+        sender_id: { not: parseInt(userId) },  // Messages envoyés par l'autre personne
+        is_read: false
+      },
+      data: {
+        is_read: true,
+        read_at: new Date()
+      }
+    });
+  }
 }
 
 module.exports = new ConversationRepository();

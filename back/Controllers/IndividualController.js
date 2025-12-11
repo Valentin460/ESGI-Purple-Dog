@@ -1,26 +1,32 @@
 const IndividualService = require('../Services/IndividualService');
 
 const IndividualController = {
-  // POST /individuals - Créer avec email/password (cas 1)
+  // POST /individuals - Créer un profil individuel
   createIndividual: async (req, res) => {
     try {
-      // Si email et password_hash : créer un nouvel user
+      console.log('Body reçu:', req.body); // Debug
+
+      // Si email et password_hash : créer un nouvel user + profil
       if (req.body.email && req.body.password_hash) {
+        console.log('Création nouvel utilisateur + profil');
         const result = await IndividualService.createIndividual(req.body);
         return res.status(201).json(result);
       }
 
-      // Si user_id : créer pour un user existant
+      // Si user_id : créer profil pour un user existant
       if (req.body.user_id) {
+        console.log('Création profil pour user existant:', req.body.user_id);
         const result = await IndividualService.createIndividualForExistingUser(req.body);
         return res.status(201).json(result);
       }
 
-      res.status(400).json({
+      // Aucun des deux cas
+      return res.status(400).json({
         success: false,
-        error: 'Fournis soit (email + password_hash) soit (user_id)'
+        error: 'Fournis soit (email + password_hash) soit (user_id) avec first_name, last_name et postal_address'
       });
     } catch (error) {
+      console.error('Erreur:', error.message); // Debug
       res.status(400).json({
         success: false,
         error: error.message

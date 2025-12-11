@@ -82,12 +82,45 @@ class AuctionRepository {
     });
   }
 
+  async findUpcoming() {
+    const now = new Date();
+    return await prisma.auction.findMany({
+      where: {
+        status: 'ACTIVE',
+        start_time: { gt: now }
+      },
+      include: {
+        item: true
+      },
+      orderBy: { start_time: 'asc' }
+    });
+  }
+
+  async findAllActive() {
+    return await prisma.auction.findMany({
+      where: {
+        status: 'ACTIVE'
+      },
+      include: {
+        item: true,
+        bids: {
+          orderBy: { bid_time: 'desc' },
+          take: 1
+        }
+      },
+      orderBy: { created_at: 'desc' }
+    });
+  }
+
   async findByStatus(status) {
     return await prisma.auction.findMany({
       where: { status },
       include: {
         item: true,
-        winner: true
+        bids: {
+          orderBy: { bid_time: 'desc' },
+          take: 1
+        }
       },
       orderBy: { created_at: 'desc' }
     });
@@ -95,11 +128,12 @@ class AuctionRepository {
 
   async update(id, data) {
     return await prisma.auction.update({
-      where: { id: parseInt(id) },
+      where: {
+        id: parseInt(id)  // ✅ Toujours convertir en Int
+      },
       data,
       include: {
-        item: true,
-        winner: true
+        item: true
       }
     });
   }
@@ -112,6 +146,24 @@ class AuctionRepository {
 
   async count() {
     return await prisma.auction.count();
+  }
+
+  async findBySellerId(sellerId) {
+    return await prisma.auction.findMany({
+      where: {
+        item: {
+          seller_id: sellerId
+        }
+      },
+      include: {
+        item: true,
+        bids: {
+          orderBy: { bid_time: 'desc' },
+          take: 1
+        }
+      },
+      orderBy: { created_at: 'desc' }
+    });
   }
 }
 

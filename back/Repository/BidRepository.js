@@ -17,8 +17,11 @@ class BidRepository {
   }
 
   async findAll(options = {}) {
+    const { skip = 0, take = 10, where = {} } = options;
     return await prisma.bid.findMany({
-      ...options,
+      skip: parseInt(skip),   // ✅ Convertir en Int
+      take: parseInt(take),   // ✅ Convertir en Int
+      where,
       include: {
         bidder: true,
         auction: {
@@ -27,7 +30,9 @@ class BidRepository {
           }
         }
       },
-      orderBy: { bid_time: 'desc' }
+      orderBy: {
+        bid_time: 'desc'
+      }
     });
   }
 
@@ -82,11 +87,23 @@ class BidRepository {
   async findWinningBid(auctionId) {
     return await prisma.bid.findFirst({
       where: {
-        auction_id: parseInt(auctionId),
-        is_winning: true
+        auction_id: parseInt(auctionId)
       },
       include: {
-        bidder: true
+        bidder: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        auction: {
+          include: {
+            item: true
+          }
+        }
+      },
+      orderBy: {
+        amount: 'desc'  // ✅ Changé de bid_amount à amount
       }
     });
   }
@@ -117,6 +134,24 @@ class BidRepository {
 
   async count(where = {}) {
     return await prisma.bid.count({ where });
+  }
+
+  async findByUserId(userId) {
+    return await prisma.bid.findMany({
+      where: {
+        bidder_id: parseInt(userId)
+      },
+      include: {
+        auction: {
+          include: {
+            item: true
+          }
+        }
+      },
+      orderBy: {
+        bid_time: 'desc'
+      }
+    });
   }
 }
 

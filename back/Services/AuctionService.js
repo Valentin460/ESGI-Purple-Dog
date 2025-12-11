@@ -90,6 +90,32 @@ class AuctionService {
     }
   }
 
+  async getUpcomingAuctions() {
+    try {
+      const auctions = await AuctionRepository.findUpcoming();
+      return {
+        success: true,
+        data: auctions,
+        count: auctions.length
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération enchères à venir: ${error.message}`);
+    }
+  }
+
+  async getAllActiveAuctions() {
+    try {
+      const auctions = await AuctionRepository.findAllActive();
+      return {
+        success: true,
+        data: auctions,
+        count: auctions.length
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération enchères actives: ${error.message}`);
+    }
+  }
+
   async getAuctionById(auctionId) {
     try {
       const auction = await AuctionRepository.findById(auctionId);
@@ -230,6 +256,128 @@ class AuctionService {
       };
     } catch (error) {
       throw new Error(`Erreur suppression enchère: ${error.message}`);
+    }
+  }
+
+  async getAuctionsByStatus(status) {
+    try {
+      const auctions = await AuctionRepository.findByStatus(status);
+      return {
+        success: true,
+        data: auctions,
+        count: auctions.length
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération enchères par statut: ${error.message}`);
+    }
+  }
+
+  async getAuctionByItemId(itemId) {
+    try {
+      const auction = await AuctionRepository.findByItemId(parseInt(itemId));
+      if (!auction) {
+        throw new Error('Aucune enchère trouvée pour cet item');
+      }
+      return {
+        success: true,
+        data: auction
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération enchère par item: ${error.message}`);
+    }
+  }
+
+  async updateAuction(id, data) {
+    try {
+      const auction = await AuctionRepository.update(parseInt(id), data);
+      return {
+        success: true,
+        message: 'Enchère mise à jour avec succès',
+        data: auction
+      };
+    } catch (error) {
+      throw new Error(`Erreur mise à jour enchère: ${error.message}`);
+    }
+  }
+
+  async getCompletedAuctions() {
+    try {
+      const auctions = await AuctionRepository.findByStatus('COMPLETED');
+      return {
+        success: true,
+        data: auctions,
+        count: auctions.length
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération enchères terminées: ${error.message}`);
+    }
+  }
+
+  async getCancelledAuctions() {
+    try {
+      const auctions = await AuctionRepository.findByStatus('CANCELLED');
+      return {
+        success: true,
+        data: auctions,
+        count: auctions.length
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération enchères annulées: ${error.message}`);
+    }
+  }
+
+  async getAuctionsBySeller(sellerId) {
+    try {
+      const auctions = await AuctionRepository.findBySellerId(parseInt(sellerId));
+      return {
+        success: true,
+        data: auctions,
+        count: auctions.length
+      };
+    } catch (error) {
+      throw new Error(`Erreur récupération enchères du vendeur: ${error.message}`);
+    }
+  }
+
+  async endAuction(id) {
+    try {
+      const auctionId = parseInt(id);
+      
+      const auction = await AuctionRepository.findById(auctionId);
+      
+      if (!auction) {
+        throw new Error('Enchère non trouvée');
+      }
+
+      if (auction.status !== 'ACTIVE') {
+        throw new Error(`Cette enchère ne peut pas être terminée (statut actuel: ${auction.status})`);
+      }
+
+      // Trouver le gagnant (dernier enchérisseur avec l'offre la plus haute)
+      const winningBid = auction.bids && auction.bids.length > 0 ? auction.bids[0] : null;
+
+      const updateData = {
+        status: 'COMPLETED',
+        end_time: new Date()
+      };
+
+      // Si il y a un gagnant
+      if (winningBid) {
+        updateData.winner_id = winningBid.bidder_id;
+        updateData.final_price = winningBid.bid_amount;
+      }
+
+      const updatedAuction = await AuctionRepository.update(auctionId, updateData);
+
+      return {
+        success: true,
+        message: winningBid 
+          ? `Enchère terminée. Gagnant: utilisateur #${winningBid.bidder_id}` 
+          : 'Enchère terminée sans enchérisseur',
+        data: updatedAuction
+      };
+    } catch (error) {
+      throw new Error(`Erreur fin enchère: ${error.message}`);
     }
   }
 }
