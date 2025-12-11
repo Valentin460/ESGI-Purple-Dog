@@ -5,6 +5,7 @@ import MesObjets from '../components/MesObjets.vue'
 import ArticleDetailView from '../views/ArticleDetailView.vue'
 import ArticleDetailClientView from '../views/ArticleDetailClientView.vue'
 import FeedbackView from '../views/FeedbackView.vue'
+import BackOfficeDashboard from '../views/BackOfficeDashboard.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,6 +66,14 @@ const router = createRouter({
     {
       path: '/avis',
       redirect: '/feedback'
+    },
+    {
+      path: '/backoffice',
+      name: 'backoffice',
+      component: BackOfficeDashboard,
+      meta: {
+        title: 'Back Office - Dashboard'
+      }
     }
   ]
 })
