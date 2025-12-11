@@ -5,6 +5,7 @@ import MesObjets from '../components/MesObjets.vue'
 import ArticleDetailView from '../views/ArticleDetailView.vue'
 import ArticleDetailClientView from '../views/ArticleDetailClientView.vue'
 import FeedbackView from '../views/FeedbackView.vue'
+import ForfaitView from '../views/ForfaitView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,6 +66,18 @@ const router = createRouter({
     {
       path: '/avis',
       redirect: '/feedback'
+    },
+    {
+      path: '/forfait',
+      name: 'forfait',
+      component: ForfaitView,
+      meta: {
+        title: 'Nos Forfaits'
+      }
+    },
+    {
+      path: '/abonnement',
+      redirect: '/forfait'
     }
   ]
 })
