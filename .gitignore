@@ -1,13 +1,13 @@
-# Environment variables (vraies valeurs)
+# Environment variables
+*.env
+.env
+.env.*
 .env.local
 .env.*.local
-back/.env.local
-front/.env.local
-
-# MAIS garder les templates
-!.env
-!back/.env
-!front/.env
+back/.env
+back/.env.*
+front/.env
+front/.env.*
 
 # Data folders
 data/

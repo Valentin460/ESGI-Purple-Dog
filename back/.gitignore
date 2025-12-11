@@ -41,3 +41,6 @@ uploads/*
 # Temp files
 tmp/
 temp/
+/generated/prisma
+
+*.env

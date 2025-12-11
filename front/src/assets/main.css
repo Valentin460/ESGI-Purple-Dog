@@ -1,5 +1,22 @@
+@import 'tailwindcss';
 @import './base.css';
+@import './responsive.css';
+@import './footer.css';
+@import './header.css';
+@import './message.css';
+@import './style.css';
 
+/* =============================
+   THEME / VARIABLES TAILWIND 4
+============================= */
+@theme {
+  --color-primary: #00bd79;
+  --color-secondary: #ff9800;
+}
+
+/* =============================
+   BASE CSS
+============================= */
 #app {
   margin: 0 auto;
   font-weight: normal;
@@ -8,11 +25,23 @@
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: var(--color-primary);
   transition: 0.4s;
   padding: 3px;
 }
 
+a:hover,
+.green:hover {
+  color: var(--color-primary);
+}
+
+button {
+  cursor: pointer;
+}
+
+/* =============================
+   RESPONSIVE
+============================= */
 @media (max-width: 1024px) {
   body {
     display: flex;
