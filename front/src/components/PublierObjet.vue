@@ -316,7 +316,7 @@
                     class="hidden peer"
                   />
                   <div
-                    class="flex items-center gap-3 p-6 border-2 border-gray-200 rounded-lg peer-checked:border-primary peer-checked:bg-primary hover:border-primary transition-colors"
+                    class="flex items-center gap-3 p-6 border-2 border-gray-200 rounded-lg peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary transition-colors"
                   >
                     <ZapIcon :size="24" class="text-gray-600 shrink-0" />
                     <div>
