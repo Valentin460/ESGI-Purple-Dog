@@ -6,10 +6,6 @@
 const { pool } = require('./config/db');
 const bcrypt = require('bcrypt');
 
-// ==========================================
-// Fonction principale de seed
-// ==========================================
-
 async function seed() {
   const client = await pool.connect();
   
@@ -20,6 +16,29 @@ async function seed() {
     console.log('═══════════════════════════════════════════════════════════');
     console.log('');
     
+    // ==========================================
+    // 0. VÉRIFIER QUE LES TABLES EXISTENT
+    // ==========================================
+    
+    console.log('🔍 Checking if tables exist...');
+    const tableCheck = await client.query(`
+      SELECT COUNT(*) 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_type = 'BASE TABLE'
+    `);
+    
+    const tableCount = parseInt(tableCheck.rows[0].count);
+    
+    if (tableCount < 10) {
+      console.error('❌ Tables do not exist!');
+      console.error('❌ Please run migration first: node migrate.js');
+      console.error('');
+      process.exit(1);
+    }
+    
+    console.log(`✅ Found ${tableCount} tables\n`);
+    
     // Commencer une transaction
     await client.query('BEGIN');
     
@@ -28,26 +47,43 @@ async function seed() {
     // ==========================================
     
     console.log('🧹 Cleaning existing data...');
-    await client.query('TRUNCATE TABLE bids CASCADE');
-    await client.query('TRUNCATE TABLE quick_sale_offers CASCADE');
-    await client.query('TRUNCATE TABLE auctions CASCADE');
-    await client.query('TRUNCATE TABLE favorites CASCADE');
-    await client.query('TRUNCATE TABLE item_documents CASCADE');
-    await client.query('TRUNCATE TABLE item_photos CASCADE');
-    await client.query('TRUNCATE TABLE items CASCADE');
-    await client.query('TRUNCATE TABLE categories CASCADE');
-    await client.query('TRUNCATE TABLE subscriptions CASCADE');
-    await client.query('TRUNCATE TABLE subscription_plans CASCADE');
-    await client.query('TRUNCATE TABLE professional_profiles CASCADE');
-    await client.query('TRUNCATE TABLE individual_profiles CASCADE');
-    await client.query('TRUNCATE TABLE users CASCADE');
+    
+    // Ordre important : supprimer les tables avec foreign keys en premier
+    const tablesToTruncate = [
+      'bids',
+      'quick_sale_offers',
+      'auctions',
+      'favorites',
+      'item_documents',
+      'item_photos',
+      'items',
+      'categories',
+      'subscriptions',
+      'subscription_plans',
+      'professional_profiles',
+      'individual_profiles',
+      'users'
+    ];
+    
+    for (const table of tablesToTruncate) {
+      try {
+        await client.query(`TRUNCATE TABLE ${table} CASCADE`);
+      } catch (error) {
+        console.error(`  ⚠️  Warning: Could not truncate ${table}: ${error.message}`);
+      }
+    }
+    
     console.log('✅ Tables cleaned\n');
     
     // Réinitialiser les séquences
-    await client.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
-    await client.query('ALTER SEQUENCE categories_id_seq RESTART WITH 1');
-    await client.query('ALTER SEQUENCE items_id_seq RESTART WITH 1');
-    await client.query('ALTER SEQUENCE auctions_id_seq RESTART WITH 1');
+    try {
+      await client.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
+      await client.query('ALTER SEQUENCE categories_id_seq RESTART WITH 1');
+      await client.query('ALTER SEQUENCE items_id_seq RESTART WITH 1');
+      await client.query('ALTER SEQUENCE auctions_id_seq RESTART WITH 1');
+    } catch (error) {
+      console.log('  ℹ️  Info: Could not reset sequences (may not exist yet)\n');
+    }
     
     // ==========================================
     // 2. SEED USERS
@@ -267,17 +303,10 @@ async function seed() {
     console.log(`   ✅ 4 item photos created\n`);
     
     // ==========================================
-    // 10. SEED ITEM DOCUMENTS
+    // 10. SEED ITEM DOCUMENTS (Skipped - optional)
     // ==========================================
     
-    console.log('📄 Seeding item documents...');
-    await client.query(`
-      INSERT INTO item_documents (item_id, document_url, document_type)
-      VALUES 
-      ($1, '/uploads/docs/rolex-certificate.pdf', 'Certificat d''authenticité'),
-      ($3, '/uploads/docs/tableau-expertise.pdf', 'Expertise')
-    `, [item1Id, item3Id]);
-    console.log(`   ✅ 2 item documents created\n`);
+    console.log('📄 Skipping item documents (optional data)...\n');
     
     // ==========================================
     // 11. SEED AUCTIONS
@@ -372,7 +401,6 @@ async function seed() {
     console.log(`   - Categories: 8`);
     console.log(`   - Items: 3`);
     console.log(`   - Item Photos: 4`);
-    console.log(`   - Item Documents: 2`);
     console.log(`   - Auctions: 2 (1 active, 1 pending)`);
     console.log(`   - Bids: 4`);
     console.log(`   - Quick Sale Offers: 2`);

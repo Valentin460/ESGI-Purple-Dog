@@ -5,12 +5,9 @@ class StripeController {
   constructor() {
     this.stripeService = new StripeService();
   }
-  
-  // ==========================================
+
   // POST /api/stripe/payment-intent
   // Créer un Payment Intent
-  // ==========================================
-  
   async createPaymentIntent(req, res) {
     try {
       const { amount, itemId, itemType } = req.body;
@@ -59,11 +56,8 @@ class StripeController {
     }
   }
   
-  // ==========================================
   // GET /api/stripe/payment-intent/:id
   // Récupérer un Payment Intent
-  // ==========================================
-  
   async getPaymentIntent(req, res) {
     try {
       const { id } = req.params;
@@ -90,11 +84,8 @@ class StripeController {
     }
   }
   
-  // ==========================================
   // POST /api/stripe/payment-intent/:id/cancel
   // Annuler un Payment Intent
-  // ==========================================
-  
   async cancelPaymentIntent(req, res) {
     try {
       const { id } = req.params;
@@ -118,12 +109,9 @@ class StripeController {
       });
     }
   }
-  
-  // ==========================================
+
   // POST /api/stripe/customer
   // Créer un client Stripe
-  // ==========================================
-  
   async createCustomer(req, res) {
     try {
       const { email, name } = req.body;
@@ -156,11 +144,8 @@ class StripeController {
     }
   }
   
-  // ==========================================
   // POST /api/stripe/subscription
   // Créer un abonnement professionnel
-  // ==========================================
-  
   async createSubscription(req, res) {
     try {
       const { customerId, priceId, trialDays } = req.body;
@@ -223,11 +208,8 @@ class StripeController {
     }
   }
   
-  // ==========================================
   // POST /api/stripe/webhook
   // Gérer les webhooks Stripe
-  // ==========================================
-  
   async handleWebhook(req, res) {
     try {
       const signature = req.headers['stripe-signature'];
@@ -277,10 +259,7 @@ class StripeController {
     }
   }
   
-  // ==========================================
   // Handlers privés pour les webhooks
-  // ==========================================
-  
   async handlePaymentSuccess(paymentIntent) {
     console.log(`Payment succeeded: ${paymentIntent.id}`);
     
@@ -315,12 +294,9 @@ class StripeController {
     
     // TODO: Marquer l'abonnement comme cancelled dans la DB
   }
-  
-  // ==========================================
+
   // GET /api/stripe/config
   // Retourner la clé publique Stripe
-  // ==========================================
-  
   async getConfig(req, res) {
     res.json({
       success: true,
