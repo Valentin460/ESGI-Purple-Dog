@@ -73,7 +73,7 @@ services:
       dockerfile: Dockerfile
     container_name: purple_dog_frontend
     ports:
-      - "8080:8080"
+      - "5137:8080"
     networks:
       - purple_dog_network
     depends_on:
