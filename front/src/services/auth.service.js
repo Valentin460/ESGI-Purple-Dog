@@ -19,9 +19,10 @@ class AuthService {
     const response = await apiService.post('/api/auth/login', credentials);
 
     // Sauvegarder le token et les informations utilisateur
-    if (response.token) {
-      this.saveToken(response.token);
-      this.saveUser(response.user);
+    // Le backend renvoie : { success, data: { user, accessToken, refreshToken } }
+    if (response.data && response.data.accessToken) {
+      this.saveToken(response.data.accessToken);
+      this.saveUser(response.data.user);
     }
 
     return response;

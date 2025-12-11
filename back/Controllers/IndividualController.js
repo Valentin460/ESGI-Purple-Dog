@@ -93,6 +93,20 @@ const IndividualController = {
     }
   },
 
+  // PUT /individuals/user/:userId - Mettre à jour par user_id
+  updateIndividualByUserId: async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const result = await IndividualService.updateIndividualByUserId(userId, req.body);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+  },
+
   // POST /individuals/:id/verify-age - Vérifier l'âge
   verifyAge: async (req, res) => {
     try {
