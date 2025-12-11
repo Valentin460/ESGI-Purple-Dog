@@ -394,14 +394,14 @@
           <button
             type="button"
             @click="handleCancel"
-            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-50 transition-colors"
+            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-200 transition-colors"
           >
             Annuler
           </button>
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="px-6 py-3 bg-primary text-white rounded-md font-semibold hover:bg-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            class="px-6 py-3 bg-primary text-white rounded-md font-semibold hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {{ isSubmitting ? 'Publication en cours...' : "Publier l'objet" }}
           </button>
