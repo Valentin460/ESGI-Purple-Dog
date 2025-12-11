@@ -27,3 +27,5 @@ front/dist/
 # IDE
 .vscode/
 .idea/
+
+*.env
