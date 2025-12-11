@@ -331,13 +331,13 @@ class User {
       
       let profile = null;
       
-      // Récupérer le profil selon le type
+      // Récupérer le profil selon le type (noms de tables Prisma)
       if (user.user_type === 'individual') {
-        const query = `SELECT * FROM individual_profiles WHERE user_id = $1`;
+        const query = `SELECT * FROM individuals WHERE user_id = $1`;
         const result = await pool.query(query, [userId]);
         profile = result.rows[0] || null;
       } else if (user.user_type === 'professional') {
-        const query = `SELECT * FROM professional_profiles WHERE user_id = $1`;
+        const query = `SELECT * FROM professionals WHERE user_id = $1`;
         const result = await pool.query(query, [userId]);
         profile = result.rows[0] || null;
       }

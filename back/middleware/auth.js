@@ -126,6 +126,5 @@ const requireVerified = (req, res, next) => {
 module.exports = {
   authenticate,
   authorize,
-  requireVerified,
-  rateLimitLogin
+  requireVerified
 };

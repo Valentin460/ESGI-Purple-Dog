@@ -2,17 +2,17 @@
 import { ref } from 'vue'
 import { useForgotPassword } from '../composables/useForgotPassword'
 
-const { 
-  email, 
-  showModal, 
-  isLoading, 
-  errorMessage, 
-  successMessage, 
-  resetStep, 
-  requestPasswordReset, 
-  resetPassword, 
-  openModal, 
-  closeModal 
+const {
+  email,
+  showModal,
+  isLoading,
+  errorMessage,
+  successMessage,
+  resetStep,
+  requestPasswordReset,
+  resetPassword,
+  openModal,
+  closeModal
 } = useForgotPassword()
 
 const resetCode = ref('')
@@ -73,7 +73,7 @@ defineExpose({
               v-model.trim="email"
               type="email"
               placeholder="votre@email.com"
-              class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
             >
           </div>
 
@@ -120,7 +120,7 @@ defineExpose({
               v-model.trim="resetCode"
               type="text"
               placeholder="Ex: ABC123DEF456"
-              class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
             >
           </div>
 
@@ -131,7 +131,7 @@ defineExpose({
               v-model="newPassword"
               type="password"
               placeholder="Minimum 8 caractères"
-              class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
             >
           </div>
 
@@ -142,7 +142,7 @@ defineExpose({
               v-model="confirmPassword"
               type="password"
               placeholder="Confirmez votre mot de passe"
-              class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
             >
           </div>
 

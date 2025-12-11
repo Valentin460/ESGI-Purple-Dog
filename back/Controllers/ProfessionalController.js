@@ -73,6 +73,20 @@ const ProfessionalController = {
     }
   },
 
+  // PUT /professionals/user/:userId - Mettre à jour par user_id
+  updateProfessionalByUserId: async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const result = await ProfessionalService.updateProfessionalByUserId(userId, req.body);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+  },
+
   // POST /professionals/:id/sign-mandate - Signer le mandat
   signMandate: async (req, res) => {
     try {

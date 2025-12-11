@@ -198,6 +198,29 @@ class IndividualService {
     }
   }
 
+  async updateIndividualByUserId(userId, updateData) {
+    try {
+      const individual = await IndividualRepository.findByUserId(userId);
+      if (!individual) {
+        throw new Error('Profil individu non trouvé pour cet utilisateur');
+      }
+
+      if (updateData.rgpd_accepted && !individual.rgpd_accepted) {
+        updateData.rgpd_accepted_at = new Date();
+      }
+
+      const updatedIndividual = await IndividualRepository.update(individual.id, updateData);
+
+      return {
+        success: true,
+        message: 'Profil individu mis à jour',
+        data: updatedIndividual
+      };
+    } catch (error) {
+      throw new Error(`Erreur mise à jour profil individu: ${error.message}`);
+    }
+  }
+
   async verifyAge(individualId) {
     try {
       const individual = await IndividualRepository.findById(individualId);

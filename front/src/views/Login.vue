@@ -91,7 +91,7 @@ const handleLogin = async () => {
             v-model.trim="email"
             type="email"
             placeholder="exemple@email.com"
-            class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-800 transition-all"
+            class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-800 transition-all text-gray-900"
           />
         </div>
 
@@ -106,7 +106,7 @@ const handleLogin = async () => {
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
               placeholder="••••••••"
-              class="w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-800 transition-all"
+              class="w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-800 transition-all text-gray-900"
             />
             <button
               type="button"

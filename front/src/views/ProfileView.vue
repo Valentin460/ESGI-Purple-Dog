@@ -1,32 +1,109 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import authService from '@/services/auth.service'
+import apiService from '@/services/api.service'
 
-const userType = ref('professional')
+const router = useRouter()
+const userType = ref(null)
+const userId = ref(null)
+const isLoading = ref(true)
+const errorMessage = ref('')
 
 const profileData = ref({
   photo: null,
-  firstName: 'Jean',
-  lastName: 'Dupont',
-  email: 'jean.dupont@example.com',
+  firstName: '',
+  lastName: '',
+  email: '',
   currentPassword: '',
   newPassword: '',
   confirmPassword: '',
-  address: '12 Rue de la Paix',
-  postalCode: '75001',
-  city: 'Paris',
+  address: '',
+  postalCode: '',
+  city: '',
   country: 'France',
-  companyName: 'Antiquités Dupont',
-  siret: '123 456 789 00012',
+  companyName: '',
+  siret: '',
   emailNotifications: true,
   auctionNotifications: true,
   messageNotifications: true,
-  newsletterSubscription: true
+  newsletterSubscription: false
 })
 
 const photoPreview = ref(null)
 const isEditing = ref(false)
 const isSaving = ref(false)
 const successMessage = ref('')
+
+// Charger les données utilisateur au montage
+onMounted(async () => {
+  try {
+    // Vérifier si l'utilisateur est connecté
+    if (!authService.isAuthenticated()) {
+      router.push('/auth/login')
+      return
+    }
+
+    // Récupérer les données utilisateur
+    const response = await authService.getCurrentUser()
+
+    if (response.success) {
+      const user = response.data
+      userId.value = user.id
+      userType.value = user.user_type
+      profileData.value.email = user.email
+
+      // Charger le profil selon le type
+      if (user.user_type === 'individual') {
+        await loadIndividualProfile(user.id)
+      } else if (user.user_type === 'professional') {
+        await loadProfessionalProfile(user.id)
+      }
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement du profil:', error)
+    errorMessage.value = 'Impossible de charger le profil'
+  } finally {
+    isLoading.value = false
+  }
+})
+
+// Charger le profil particulier
+const loadIndividualProfile = async (userId) => {
+  try {
+    const response = await apiService.get(`/api/individuals/user/${userId}`)
+    if (response.data) {
+      const profile = response.data
+      profileData.value.firstName = profile.first_name || ''
+      profileData.value.lastName = profile.last_name || ''
+      profileData.value.address = profile.postal_address || ''
+      profileData.value.newsletterSubscription = profile.newsletter_subscribed || false
+      if (profile.profile_picture) {
+        photoPreview.value = profile.profile_picture
+      }
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement du profil particulier:', error)
+  }
+}
+
+// Charger le profil professionnel
+const loadProfessionalProfile = async (userId) => {
+  try {
+    const response = await apiService.get(`/api/professionals/user/${userId}`)
+    if (response.data) {
+      const profile = response.data
+      profileData.value.firstName = profile.first_name || ''
+      profileData.value.lastName = profile.last_name || ''
+      profileData.value.address = profile.postal_address || ''
+      profileData.value.companyName = profile.company_name || ''
+      profileData.value.siret = profile.siret_number || ''
+      profileData.value.newsletterSubscription = profile.newsletter_subscribed || false
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement du profil professionnel:', error)
+  }
+}
 
 const handlePhotoUpload = (event) => {
   const file = event.target.files[0]
@@ -43,33 +120,66 @@ const handlePhotoUpload = (event) => {
 const saveProfile = async () => {
   isSaving.value = true
   successMessage.value = ''
+  errorMessage.value = ''
 
-  if (profileData.value.newPassword) {
-    if (profileData.value.newPassword !== profileData.value.confirmPassword) {
-      alert('Les mots de passe ne correspondent pas')
-      isSaving.value = false
-      return
+  try {
+    // Validation des mots de passe
+    if (profileData.value.newPassword) {
+      if (profileData.value.newPassword !== profileData.value.confirmPassword) {
+        alert('Les mots de passe ne correspondent pas')
+        isSaving.value = false
+        return
+      }
+      if (!profileData.value.currentPassword) {
+        alert('Veuillez entrer votre mot de passe actuel')
+        isSaving.value = false
+        return
+      }
     }
-    if (!profileData.value.currentPassword) {
-      alert('Veuillez entrer votre mot de passe actuel')
-      isSaving.value = false
-      return
+
+    // Mettre à jour le profil selon le type
+    if (userType.value === 'individual') {
+      await apiService.put(`/api/individuals/user/${userId.value}`, {
+        first_name: profileData.value.firstName,
+        last_name: profileData.value.lastName,
+        postal_address: profileData.value.address,
+        newsletter_subscribed: profileData.value.newsletterSubscription
+      })
+    } else if (userType.value === 'professional') {
+      await apiService.put(`/api/professionals/user/${userId.value}`, {
+        first_name: profileData.value.firstName,
+        last_name: profileData.value.lastName,
+        company_name: profileData.value.companyName,
+        postal_address: profileData.value.address,
+        newsletter_subscribed: profileData.value.newsletterSubscription
+      })
     }
+
+    // Mettre à jour le mot de passe si nécessaire
+    if (profileData.value.newPassword) {
+      await apiService.post('/api/users/change-password', {
+        current_password: profileData.value.currentPassword,
+        new_password: profileData.value.newPassword
+      })
+    }
+
+    successMessage.value = 'Profil mis à jour avec succès'
+    isEditing.value = false
+
+    profileData.value.currentPassword = ''
+    profileData.value.newPassword = ''
+    profileData.value.confirmPassword = ''
+
+    setTimeout(() => {
+      successMessage.value = ''
+    }, 3000)
+
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde du profil:', error)
+    errorMessage.value = error.message || 'Erreur lors de la sauvegarde. Veuillez réessayer.'
+  } finally {
+    isSaving.value = false
   }
-
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  successMessage.value = 'Profil mis à jour avec succès'
-  isEditing.value = false
-  isSaving.value = false
-
-  profileData.value.currentPassword = ''
-  profileData.value.newPassword = ''
-  profileData.value.confirmPassword = ''
-
-  setTimeout(() => {
-    successMessage.value = ''
-  }, 3000)
 }
 
 const cancelEdit = () => {

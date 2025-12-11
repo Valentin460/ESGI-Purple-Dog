@@ -197,6 +197,25 @@ class ProfessionalService {
     }
   }
 
+  async updateProfessionalByUserId(userId, updateData) {
+    try {
+      const professional = await ProfessionalRepository.findByUserId(userId);
+      if (!professional) {
+        throw new Error('Profil professionnel non trouvé pour cet utilisateur');
+      }
+
+      const updatedProfessional = await ProfessionalRepository.update(professional.id, updateData);
+
+      return {
+        success: true,
+        message: 'Profil professionnel mis à jour',
+        data: updatedProfessional
+      };
+    } catch (error) {
+      throw new Error(`Erreur mise à jour profil professionnel: ${error.message}`);
+    }
+  }
+
   async signMandate(professionalId) {
     try {
       const professional = await ProfessionalRepository.findById(professionalId);

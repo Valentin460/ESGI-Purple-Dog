@@ -16,6 +16,9 @@ router.post('/:id/sign-mandate', ProfessionalController.signMandate);
 // GET - Par user_id
 router.get('/user/:userId', ProfessionalController.getProfessionalByUserId);
 
+// PUT - Mettre à jour par user_id
+router.put('/user/:userId', ProfessionalController.updateProfessionalByUserId);
+
 // GET - Par ID
 router.get('/:id', ProfessionalController.getProfessionalById);
 
