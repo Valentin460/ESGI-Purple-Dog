@@ -2,6 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import ProfileView from '../views/ProfileView.vue'
 import PublierObjet from '../components/PublierObjet.vue'
 import MesObjets from '../components/MesObjets.vue'
+import ArticleDetailView from '../views/ArticleDetailView.vue'
+import ArticleDetailClientView from '../views/ArticleDetailClientView.vue'
+import RechercheView from '../views/RechercheView.vue'
+import FeedbackView from '../views/FeedbackView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,12 +27,36 @@ const router = createRouter({
       },
     },
     {
+      path: '/recherche',
+      name: 'recherche',
+      component: RechercheView,
+      meta: {
+        title: 'Rechercher un objet'
+      }
+    },
+    {
       path: '/mes-objets',
       name: 'mes-objets',
       component: MesObjets,
       meta: {
         title: 'Mes objets en vente',
       },
+    },
+    {
+      path: '/objet/:id',
+      name: 'article-detail',
+      component: ArticleDetailView,
+      meta: {
+        title: 'Détails de l\'objet'
+      }
+    },
+    {
+      path: '/annonce/:id',
+      name: 'article-detail-client',
+      component: ArticleDetailClientView,
+      meta: {
+        title: 'Détails de l\'annonce'
+      }
     },
     {
       path: '/profile',
@@ -40,9 +68,21 @@ const router = createRouter({
     },
     {
       path: '/profil',
-      redirect: '/profile',
+      redirect: '/profile'
     },
-  ],
+    {
+      path: '/feedback',
+      name: 'feedback',
+      component: FeedbackView,
+      meta: {
+        title: 'Donnez votre avis'
+      }
+    },
+    {
+      path: '/avis',
+      redirect: '/feedback'
+    }
+  ]
 })
 
 router.beforeEach((to, from, next) => {

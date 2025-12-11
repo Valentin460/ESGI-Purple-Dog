@@ -2,7 +2,7 @@
   <div class="mes-objets-page">
     <div class="page-container">
       <div class="page-header">
-        <h1> Mes objets en vente</h1>
+        <h1> Tous mes objets</h1>
         <p class="subtitle">Gérez vos annonces et suivez vos ventes</p>
       </div>
 
@@ -40,7 +40,7 @@
         <div v-for="objet in objetsFiltres" :key="objet.id" class="objet-card" @click="voirDetails(objet)">
           <!-- Image principale -->
           <div class="objet-image">
-            <img :src="objet.photos[0]?.preview" :alt="objet.nom" />
+            <img :src="imageDefault" :alt="objet.nom" />
             <div class="statut-badge" :class="objet.statut">
               {{ getStatutLabel(objet.statut) }}
             </div>
@@ -257,125 +257,11 @@
     </div>
 
     <!-- Modal : Détail de l'annonce -->
+    <!-- Modal : Détails de l'annonce (ArticleDetail) -->
     <div v-if="modalDetail" class="modal-overlay" @click="fermerModalDetail">
-      <div class="modal-content modal-large" @click.stop>
-        <div class="modal-header">
-          <h2>Détail de l'annonce</h2>
-          <button class="modal-close" @click="fermerModalDetail">✕</button>
-        </div>
-        <div class="modal-body">
-          <!-- Galerie photos -->
-          <div class="detail-gallery">
-            <div class="main-photo">
-              <img :src="photoActuelle" :alt="objetSelectionne?.nom" />
-              <div class="photo-counter">
-                {{ indexPhotoActuelle + 1 }} / {{ objetSelectionne?.photos.length }}
-              </div>
-            </div>
-            <div class="thumbnails-detail">
-              <div v-for="(photo, index) in objetSelectionne?.photos" :key="index" class="thumbnail-detail"
-                :class="{ active: index === indexPhotoActuelle }" @click="indexPhotoActuelle = index">
-                <img :src="photo.preview" :alt="`Photo ${index + 1}`" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Informations de l'annonce -->
-          <div class="detail-info">
-            <h3 class="detail-nom">{{ objetSelectionne?.nom }}</h3>
-            <div class="detail-categorie">🏷️ {{ objetSelectionne?.categorie }}</div>
-
-            <!-- Type de vente et statut -->
-            <div class="detail-badges">
-              <div v-if="objetSelectionne?.typeVente === 'enchere'" class="badge-type enchere">
-                Enchère
-              </div>
-              <div v-else class="badge-type vente">
-                Vente rapide
-              </div>
-              <div class="badge-statut" :class="objetSelectionne?.statut">
-                {{ getStatutLabel(objetSelectionne?.statut) }}
-              </div>
-            </div>
-
-            <!-- Prix -->
-            <div class="detail-prix-section">
-              <div v-if="objetSelectionne?.typeVente === 'enchere'">
-                <div class="prix-actuel-detail">
-                  <span class="label-detail">Enchère actuelle</span>
-                  <span class="montant-detail">{{ formatPrice(objetSelectionne?.enchereActuelle ||
-                    objetSelectionne?.prixDepart) }}</span>
-                </div>
-                <div class="prix-minimum-detail">
-                  <span class="label-detail">Prix minimum</span>
-                  <span class="montant-mini">{{ formatPrice(objetSelectionne?.prix) }}</span>
-                </div>
-              </div>
-              <div v-else>
-                <div class="prix-actuel-detail">
-                  <span class="label-detail">Prix</span>
-                  <span class="montant-detail">{{ formatPrice(objetSelectionne?.prix) }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Temps restant pour enchère -->
-            <div v-if="objetSelectionne?.typeVente === 'enchere'" class="temps-restant-detail">
-              <span class="icon"></span>
-              <span>{{ getTempsRestant(objetSelectionne) }}</span>
-            </div>
-
-            <!-- Résumé offres et messages -->
-            <div class="resume-interactions">
-              <div class="resume-item">
-                <span class="resume-text">{{ objetSelectionne?.nombreOffres || 0 }} offre(s) reçue(s)</span>
-              </div>
-              <div class="resume-item">
-                <span class="resume-text">{{ objetSelectionne?.questions?.length || 0 }} question(s) reçue(s)</span>
-              </div>
-            </div>
-
-            <!-- Liste des offres reçues -->
-            <div v-if="objetSelectionne?.offres && objetSelectionne.offres.length > 0" class="section-detail">
-              <h4> Offres reçues</h4>
-              <div class="offres-list-detail">
-                <div v-for="(offre, index) in objetSelectionne.offres" :key="index" class="offre-detail-item">
-                  <div class="offre-user"> {{ offre.acheteur }}</div>
-                  <div class="offre-montant-small">{{ formatPrice(offre.montant) }}</div>
-                  <div class="offre-date-small">{{ formatDate(offre.date) }}</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Liste des messages reçus -->
-            <div v-if="objetSelectionne?.questions && objetSelectionne.questions.length > 0" class="section-detail">
-              <h4> Questions reçues</h4>
-              <div class="questions-list-detail">
-                <div v-for="(question, index) in objetSelectionne.questions" :key="index" class="question-detail-item">
-                  <div class="question-user">👤 {{ question.acheteur }}</div>
-                  <div class="question-texte">{{ question.question }}</div>
-                  <div v-if="question.reponse" class="question-reponse">
-                    <strong>Votre réponse :</strong> {{ question.reponse }}
-                  </div>
-                  <div v-else class="question-non-repondu"> Non répondu</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Bouton baisser le prix -->
-            <div class="detail-action">
-              <button @click="ouvrirBaisserPrixDepuisDetail" class="btn-baisser-prix-detail">
-                Baisser le prix
-              </button>
-              <button @click="modifierAnnonce" class="btn-modifier-detail">
-                Modifier l'annonce
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button @click="fermerModalDetail" class="btn-secondary">Fermer</button>
-        </div>
+      <div class="modal-content modal-article-detail" @click.stop>
+        <ArticleDetail v-if="objetSelectionne" :article="objetSelectionne" @retour="fermerModalDetail"
+          @modifier="modifierAnnonce" @baisser-prix="ouvrirBaisserPrixDepuisDetail" @supprimer="supprimerAnnonce" />
       </div>
     </div>
 
@@ -389,27 +275,66 @@
         <div class="modal-body modal-body-form">
           <form @submit.prevent="confirmerModification" class="form-modifier">
 
+            <!-- Photos -->
+            <div class="form-section">
+              <h3>Photos</h3>
+              <p class="info-text">Glissez-déposez les photos pour changer leur ordre. La première photo sera l'image
+                principale.</p>
+              <div class="photos-upload-zone">
+                <input type="file" ref="photosInputModif" @change="handlePhotosUploadModif"
+                  accept="image/jpeg,image/png,image/jpg" multiple style="display: none" />
+
+                <div class="photos-grid">
+                  <div v-for="(photo, index) in formModif.photos" :key="index" class="photo-preview" draggable="true"
+                    @dragstart="handleDragStart(index)" @dragover.prevent @drop="handleDrop(index)"
+                    @dragenter.prevent="handleDragEnter(index)" @dragleave="handleDragLeave"
+                    :class="{ 'drag-over': dragOverIndex === index, 'is-dragging': draggedIndex === index }">
+                    <img :src="photo.preview" :alt="`Photo ${index + 1}`" />
+                    <button type="button" @click="removePhotoModif(index)" class="remove-photo-btn">
+                      <X :size="16" />
+                    </button>
+                    <span class="photo-number">{{ index + 1 }}</span>
+                    <span v-if="index === 0" class="main-photo-badge">Image principale</span>
+                  </div>
+
+                  <button type="button" @click="$refs.photosInputModif.click()" class="add-photo-btn"
+                    :class="{ disabled: formModif.photos.length >= 20 }" :disabled="formModif.photos.length >= 20">
+                    <Upload :size="24" class="icon-upload" />
+                    <span>Ajouter des photos</span>
+                    <small>{{ formModif.photos.length }}/20</small>
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Informations générales -->
             <div class="form-section">
               <h3>Informations générales</h3>
 
               <div class="form-group">
-                <label for="nom-modif">Nom de l'objet *</label>
+                <label for="nom-modif">Nom de l'objet </label>
                 <input type="text" id="nom-modif" v-model="formModif.nom" required class="input-field" />
               </div>
 
               <div class="form-group">
-                <label for="categorie-modif">Catégorie *</label>
+                <label for="categorie-modif">Catégorie </label>
                 <select id="categorie-modif" v-model="formModif.categorie" required class="input-field">
                   <option value="">Sélectionnez une catégorie</option>
-                  <option value="Mobilier">Mobilier</option>
-                  <option value="Art">Art</option>
-                  <option value="Décoration">Décoration</option>
-                  <option value="Bijoux">Bijoux</option>
-                  <option value="Antiquités">Antiquités</option>
-                  <option value="Design">Design</option>
-                  <option value="Vintage">Vintage</option>
-                  <option value="Autres">Autres</option>
+                  <option value="Bijoux & montres">Bijoux & montres</option>
+                  <option value="Meubles anciens">Meubles anciens</option>
+                  <option value="Objets d'art & tableaux">Objets d'art & tableaux</option>
+                  <option value="Objets de collection">Objets de collection (jouets, timbres, monnaies…)</option>
+                  <option value="Vins & spiritueux de collection">Vins & spiritueux de collection</option>
+                  <option value="Instruments de musique">Instruments de musique</option>
+                  <option value="Livres anciens & manuscrits">Livres anciens & manuscrits</option>
+                  <option value="Mode & accessoires de luxe">Mode & accessoires de luxe (sacs, chaussures, vêtements de
+                    marque, etc.)</option>
+                  <option value="Horlogerie & pendules anciennes">Horlogerie & pendules anciennes</option>
+                  <option value="Photographies anciennes & appareils vintage">Photographies anciennes & appareils
+                    vintage</option>
+                  <option value="Vaisselle & argenterie & cristallerie">Vaisselle & argenterie & cristallerie</option>
+                  <option value="Sculptures & objets décoratifs">Sculptures & objets décoratifs</option>
+                  <option value="Véhicules de collection">Véhicules de collection (auto, moto, nautisme, etc.)</option>
                 </select>
               </div>
 
@@ -442,7 +367,7 @@
             <div class="form-section">
               <h3>Description</h3>
               <div class="form-group">
-                <label for="description-modif">Description détaillée *</label>
+                <label for="description-modif">Description détaillée </label>
                 <textarea id="description-modif" v-model="formModif.description" required rows="6"
                   class="input-field textarea-field"></textarea>
               </div>
@@ -453,7 +378,7 @@
               <h3>Prix et type de vente</h3>
 
               <div class="form-group">
-                <label for="prix-modif">Prix souhaité (€) *</label>
+                <label for="prix-modif">Prix souhaité (€) </label>
                 <input type="number" id="prix-modif" v-model.number="formModif.prix" required class="input-field"
                   min="0" step="0.01" />
               </div>
@@ -490,7 +415,14 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { X, Upload } from 'lucide-vue-next'
+import imageDefault from '../assets/image.jpg'
+import ArticleDetail from './ArticleDetail.vue'
+
+const route = useRoute()
+const router = useRouter()
 
 // Données de test - À remplacer par un appel API
 const mesObjets = ref([
@@ -581,6 +513,8 @@ const nouveauType = ref('')
 const nouveauPrix = ref(null)
 const ongletActif = ref('offres')
 const indexPhotoActuelle = ref(0)
+const draggedIndex = ref(null)
+const dragOverIndex = ref(null)
 const formModif = ref({
   nom: '',
   categorie: '',
@@ -592,7 +526,8 @@ const formModif = ref({
   poids: null,
   description: '',
   prix: null,
-  typeVente: ''
+  typeVente: '',
+  photos: []
 })
 
 const photoActuelle = computed(() => {
@@ -649,9 +584,7 @@ const getTempsRestant = (objet) => {
 }
 
 const voirDetails = (objet) => {
-  objetSelectionne.value = objet
-  indexPhotoActuelle.value = 0
-  modalDetail.value = true
+  router.push(`/objet/${objet.id}`)
 }
 
 const fermerModalDetail = () => {
@@ -742,7 +675,8 @@ const modifierAnnonce = () => {
       poids: objetSelectionne.value.poids || 0,
       description: objetSelectionne.value.description || '',
       prix: objetSelectionne.value.prix,
-      typeVente: objetSelectionne.value.typeVente
+      typeVente: objetSelectionne.value.typeVente,
+      photos: [...(objetSelectionne.value.photos || [])]
     }
 
     fermerModalDetail()
@@ -759,7 +693,8 @@ const fermerModalModifier = () => {
     poids: null,
     description: '',
     prix: null,
-    typeVente: ''
+    typeVente: '',
+    photos: []
   }
 }
 
@@ -773,6 +708,7 @@ const confirmerModification = () => {
     objetSelectionne.value.description = formModif.value.description
     objetSelectionne.value.prix = formModif.value.prix
     objetSelectionne.value.typeVente = formModif.value.typeVente
+    objetSelectionne.value.photos = [...formModif.value.photos]
 
     // Si enchère, recalculer le prix de départ
     if (formModif.value.typeVente === 'enchere') {
@@ -785,6 +721,70 @@ const confirmerModification = () => {
   }
 }
 
+const handlePhotosUploadModif = (event) => {
+  const files = Array.from(event.target.files)
+  const photosRestantes = 20 - formModif.value.photos.length
+
+  if (files.length > photosRestantes) {
+    alert(`Vous ne pouvez ajouter que ${photosRestantes} photo(s) supplémentaire(s)`)
+    return
+  }
+
+  files.forEach((file) => {
+    if (file.size > 5 * 1024 * 1024) {
+      alert(`Le fichier ${file.name} est trop volumineux (max 5 Mo)`)
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      formModif.value.photos.push({
+        file,
+        preview: e.target.result,
+        name: file.name
+      })
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+const removePhotoModif = (index) => {
+  formModif.value.photos.splice(index, 1)
+}
+
+const handleDragStart = (index) => {
+  draggedIndex.value = index
+}
+
+const handleDragEnter = (index) => {
+  dragOverIndex.value = index
+}
+
+const handleDragLeave = () => {
+  dragOverIndex.value = null
+}
+
+const handleDrop = (dropIndex) => {
+  if (draggedIndex.value === null || draggedIndex.value === dropIndex) {
+    draggedIndex.value = null
+    dragOverIndex.value = null
+    return
+  }
+
+  const photos = [...formModif.value.photos]
+  const draggedPhoto = photos[draggedIndex.value]
+
+  // Retirer la photo de sa position d'origine
+  photos.splice(draggedIndex.value, 1)
+
+  // Insérer la photo à la nouvelle position
+  photos.splice(dropIndex, 0, draggedPhoto)
+
+  formModif.value.photos = photos
+  draggedIndex.value = null
+  dragOverIndex.value = null
+}
+
 const envoyerReponse = (question) => {
   if (question.nouvelleReponse.trim()) {
     question.reponse = question.nouvelleReponse
@@ -792,6 +792,47 @@ const envoyerReponse = (question) => {
     alert('Réponse envoyée !')
   }
 }
+
+const supprimerAnnonce = (id) => {
+  const index = mesObjets.value.findIndex(obj => obj.id === id)
+  if (index !== -1) {
+    mesObjets.value.splice(index, 1)
+    fermerModalDetail()
+    alert('Annonce supprimée avec succès !')
+  }
+}
+
+// Détection du paramètre query pour ouvrir la modale de modification
+onMounted(() => {
+  const modifierId = route.query.modifier
+  if (modifierId) {
+    const objet = mesObjets.value.find(obj => obj.id === parseInt(modifierId))
+    if (objet) {
+      objetSelectionne.value = objet
+      formModif.value = {
+        nom: objet.nom || '',
+        categorie: objet.categorie || '',
+        dimensions: { ...objet.dimensions } || { hauteur: null, largeur: null, profondeur: null },
+        poids: objet.poids,
+        description: objet.description || '',
+        prix: objet.prix,
+        typeVente: objet.typeVente,
+        photos: [...(objet.photos || [])]
+      }
+      modalModifier.value = true
+    }
+  }
+
+  const baisserPrixId = route.query.baisserPrix
+  if (baisserPrixId) {
+    const objet = mesObjets.value.find(obj => obj.id === parseInt(baisserPrixId))
+    if (objet) {
+      objetSelectionne.value = objet
+      nouveauPrix.value = objet.prix
+      modalBaisserPrix.value = true
+    }
+  }
+})
 </script>
 
 <style scoped>
@@ -942,10 +983,22 @@ label {
   background: #f3f4f6;
 }
 
+.objet-image::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+  z-index: 1;
+}
+
 .objet-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: brightness(0.9);
 }
 
 .statut-badge {
@@ -957,20 +1010,22 @@ label {
   font-size: 0.875rem;
   font-weight: 600;
   backdrop-filter: blur(10px);
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .statut-badge.actif {
-  background: rgba(16, 185, 129, 0.9);
+  background: rgba(16, 185, 129, 0.95);
   color: white;
 }
 
 .statut-badge.vendu {
-  background: rgba(59, 130, 246, 0.9);
+  background: rgba(59, 130, 246, 0.95);
   color: white;
 }
 
 .statut-badge.expire {
-  background: rgba(239, 68, 68, 0.9);
+  background: rgba(239, 68, 68, 0.95);
   color: white;
 }
 
@@ -982,13 +1037,15 @@ label {
   border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 600;
-  background: rgba(102, 126, 234, 0.9);
+  background: rgba(122, 143, 237, 0.95);
   color: white;
   backdrop-filter: blur(10px);
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .type-badge.vente-rapide {
-  background: rgba(16, 185, 129, 0.9);
+  background: rgba(16, 185, 129, 0.95);
 }
 
 .objet-info {
@@ -1139,6 +1196,20 @@ label {
   max-width: 800px;
 }
 
+.modal-article-detail {
+  max-width: 95vw;
+  width: 1400px;
+  max-height: 95vh;
+  padding: 0;
+  background: transparent;
+}
+
+.modal-article-detail .article-page {
+  background: transparent;
+  padding: 0;
+  min-height: auto;
+}
+
 .modal-header {
   padding: 1.5rem 2rem;
   border-bottom: 1px solid #e5e7eb;
@@ -1195,19 +1266,11 @@ label {
 }
 
 .form-group label {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.form-group label:hover {
-  border-color: #667eea;
-  background: #f9fafb;
+  display: block;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  font-weight: 400;
 }
 
 .form-group input[type="radio"] {
@@ -1862,6 +1925,147 @@ label {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid #e5e7eb;
+}
+
+.photos-upload-zone {
+  margin-top: 1rem;
+}
+
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.photo-preview {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+  cursor: move;
+  transition: all 0.2s;
+}
+
+.photo-preview:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.photo-preview.is-dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.photo-preview.drag-over {
+  border-color: #667eea;
+  border-width: 3px;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.remove-photo-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.remove-photo-btn:hover {
+  background: rgba(220, 38, 38, 1);
+  transform: scale(1.1);
+}
+
+.photo-number {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.main-photo-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(102, 126, 234, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.info-text {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #f3f4f6;
+  border-radius: 6px;
+  border-left: 3px solid #667eea;
+}
+
+.add-photo-btn {
+  aspect-ratio: 1;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 1rem;
+}
+
+.add-photo-btn:hover:not(.disabled) {
+  border-color: #667eea;
+  background: #f3f4f6;
+}
+
+.add-photo-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.add-photo-btn span {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.add-photo-btn small {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.icon-upload {
+  color: #667eea;
 }
 
 .form-row {

@@ -14,7 +14,7 @@
           <h2>Informations générales</h2>
 
           <div class="form-group">
-            <label for="nom">Nom de l'objet *</label>
+            <label for="nom">Nom de l'objet </label>
             <input
               type="text"
               id="nom"
@@ -25,17 +25,36 @@
           </div>
 
           <div class="form-group">
-            <label for="categorie">Catégorie *</label>
+            <label for="categorie">Catégorie </label>
             <select id="categorie" v-model="formData.categorie" required>
               <option value="" disabled>Sélectionnez une catégorie</option>
-              <option value="Mobilier">Mobilier</option>
-              <option value="Art">Art</option>
-              <option value="Décoration">Décoration</option>
-              <option value="Bijoux">Bijoux</option>
-              <option value="Antiquités">Antiquités</option>
-              <option value="Design">Design</option>
-              <option value="Vintage">Vintage</option>
-              <option value="Autres">Autres</option>
+              <option value="Bijoux & montres">Bijoux & montres</option>
+              <option value="Meubles anciens">Meubles anciens</option>
+              <option value="Objets d'art & tableaux">Objets d'art & tableaux</option>
+              <option value="Objets de collection">
+                Objets de collection (jouets, timbres, monnaies…)
+              </option>
+              <option value="Vins & spiritueux de collection">
+                Vins & spiritueux de collection
+              </option>
+              <option value="Instruments de musique">Instruments de musique</option>
+              <option value="Livres anciens & manuscrits">Livres anciens & manuscrits</option>
+              <option value="Mode & accessoires de luxe">
+                Mode & accessoires de luxe (sacs, chaussures, vêtements de marque, etc.)
+              </option>
+              <option value="Horlogerie & pendules anciennes">
+                Horlogerie & pendules anciennes
+              </option>
+              <option value="Photographies anciennes & appareils vintage">
+                Photographies anciennes & appareils vintage
+              </option>
+              <option value="Vaisselle & argenterie & cristallerie">
+                Vaisselle & argenterie & cristallerie
+              </option>
+              <option value="Sculptures & objets décoratifs">Sculptures & objets décoratifs</option>
+              <option value="Véhicules de collection">
+                Véhicules de collection (auto, moto, nautisme, etc.)
+              </option>
             </select>
           </div>
 
@@ -94,7 +113,7 @@
           </div>
 
           <div class="form-group">
-            <label for="description">Description *</label>
+            <label for="description">Description </label>
             <textarea
               id="description"
               v-model="formData.description"
@@ -108,7 +127,7 @@
 
         <!-- Photos -->
         <div class="form-section">
-          <h2>Photos *</h2>
+          <h2>Photos</h2>
           <p class="section-info">
             <InfoIcon :size="20" class="icon-info" />
             Minimum 10 photos requises - Format JPG, PNG - Maximum 5 Mo par photo
@@ -191,7 +210,7 @@
           <h2>Prix et type de vente</h2>
 
           <div class="form-group">
-            <label for="prix">Prix souhaité (€) *</label>
+            <label for="prix">Prix souhaité (€) </label>
             <input
               type="number"
               id="prix"
@@ -204,7 +223,7 @@
           </div>
 
           <div class="form-group">
-            <label>Type de vente *</label>
+            <label>Type de vente </label>
             <div class="radio-group">
               <label class="radio-label">
                 <input type="radio" v-model="formData.typeVente" value="enchere" required />
