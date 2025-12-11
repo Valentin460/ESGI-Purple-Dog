@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ProfileView from '../views/ProfileView.vue'
 import FeedbackView from '../views/FeedbackView.vue'
+import AuctionWon from '../views/AuctionWon.vue';
+import PaymentSuccess from '../views/PaymentSuccess.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +30,16 @@ const router = createRouter({
     {
       path: '/avis',
       redirect: '/feedback'
+    },
+    {
+      path: '/auction-won/:id',
+      name: 'AuctionWon',
+      component: AuctionWon
+    },
+    {
+      path: '/payment-success',
+      name: 'PaymentSuccess',
+      component: PaymentSuccess
     }
   ]
 })
