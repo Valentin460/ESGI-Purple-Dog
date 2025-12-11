@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import PublierObjet from '../components/PublierObjet.vue'
 import MesObjets from '../components/MesObjets.vue'
@@ -16,10 +17,10 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: PublierObjet,
+      component: HomeView,
       meta: {
-        title: 'Publier un objet - Purple Dog',
-      },
+        title: 'Purple Dog - Collection d\'Exception'
+      }
     },
     {
       path: '/publier',
