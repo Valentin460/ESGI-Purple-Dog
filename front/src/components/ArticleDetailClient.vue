@@ -104,19 +104,43 @@
 
               <!-- Formulaire enchère -->
               <div class="bid-form">
-                <label>Votre offre</label>
+                <label>Vos enchères</label>
+
+                <!-- Boutons d'enchères rapides -->
+                <div class="quick-bid-buttons">
+                  <button v-for="palier in paliersRapides" :key="palier" @click="montantOffre = palier"
+                    class="btn-quick-bid" :class="{ active: montantOffre === palier }">
+                    {{ formatPrice(palier) }}
+                  </button>
+                </div>
+
                 <div class="bid-input-group">
-                  <input v-model.number="montantOffre" type="number" :min="enchereMinimale" :step="incrementEnchere"
-                    class="bid-input" placeholder="Entrez votre offre" />
+                  <input v-model.number="montantOffre" type="number" :min="enchereMinimale" :step="palierEnchere"
+                    class="bid-input" placeholder="Ou entrez votre offre" />
                   <span class="currency">€</span>
                 </div>
-                <p class="bid-hint">Enchère minimale : {{ formatPrice(enchereMinimale) }}</p>
+
+                <!-- Enchère automatique -->
+                <div class="auto-bid-section">
+                  <label class="checkbox-label">
+                    <input type="checkbox" v-model="enchereAutomatique" />
+                    Enchère automatique jusqu'à {{ formatPrice(montantOffre || enchereMinimale) }}
+                  </label>
+                  <p class="auto-bid-info">
+                    <AlertCircle :size="16" />
+                    Nous enchérirons automatiquement par paliers de {{ formatPrice(palierEnchere) }} pour vous maintenir
+                    en tête
+                  </p>
+                </div>
+
+                <p class="bid-hint">Enchère minimale : {{ formatPrice(enchereMinimale) }} (palier : {{
+                  formatPrice(palierEnchere) }})</p>
                 <p v-if="montantOffre && montantOffre < enchereMinimale" class="error-hint">
-                  ⚠️ Votre offre doit être supérieure à {{ formatPrice(enchereMinimale) }}
+                  ⚠️ Votre offre doit être au minimum {{ formatPrice(enchereMinimale) }}
                 </p>
                 <button @click="ouvrirModalEnchere" class="btn-bid" :disabled="!montantOffreValide">
                   <Gavel :size="20" />
-                  Placer une offre
+                  {{ enchereAutomatique ? 'Placer une enchère automatique' : 'Placer une offre' }}
                 </button>
               </div>
             </div>
@@ -266,8 +290,12 @@
                 <span class="recap-value">{{ formatPrice(enchereActuelle) }}</span>
               </div>
               <div class="recap-item highlight">
-                <span class="recap-label">Votre offre :</span>
+                <span class="recap-label">Votre offre {{ enchereAutomatique ? 'maximale' : '' }} :</span>
                 <span class="recap-value">{{ formatPrice(montantOffre) }}</span>
+              </div>
+              <div v-if="enchereAutomatique" class="recap-item">
+                <span class="recap-label">Enchère automatique :</span>
+                <span class="recap-value">Activée (palier : {{ formatPrice(palierEnchere) }})</span>
               </div>
             </div>
 
@@ -462,6 +490,7 @@ let countdownInterval = null
 const modalEnchere = ref(false)
 const etapeEnchere = ref(1)
 const confirmationLue = ref(false)
+const enchereAutomatique = ref(false)
 const formEnchere = ref({
   nomComplet: '',
   adresse: '',
@@ -483,16 +512,32 @@ const currentPhoto = computed(() => {
   return ''
 })
 
-const incrementEnchere = computed(() => {
-  // Incrément basé sur le prix actuel
-  if (enchereActuelle.value < 100) return 5
-  if (enchereActuelle.value < 500) return 10
-  if (enchereActuelle.value < 1000) return 25
-  return 50
+// Palier d'enchères selon les règles métier
+const palierEnchere = computed(() => {
+  const prix = enchereActuelle.value
+  if (prix < 100) return 10
+  if (prix < 500) return 50
+  if (prix < 1000) return 100
+  if (prix < 5000) return 200
+  if (prix < 10000) return 500
+  return 1000
 })
 
 const enchereMinimale = computed(() => {
-  return enchereActuelle.value + incrementEnchere.value
+  return enchereActuelle.value + palierEnchere.value
+})
+
+// Génération des boutons d'enchères rapides (3 paliers au-dessus du minimum)
+const paliersRapides = computed(() => {
+  const paliers = []
+  const min = enchereMinimale.value
+  const increment = palierEnchere.value
+
+  for (let i = 0; i < 3; i++) {
+    paliers.push(min + (increment * i))
+  }
+
+  return paliers
 })
 
 const montantOffreValide = computed(() => {
@@ -630,11 +675,15 @@ const confirmerOffre = () => {
     emit('placer-offre', {
       articleId: props.article.id,
       montant: montantOffre.value,
+      montantMaxAuto: enchereAutomatique.value ? montantOffre.value : null,
+      enchereAutomatique: enchereAutomatique.value,
       informations: formEnchere.value
     })
-    enchereActuelle.value = montantOffre.value
+    // Si enchère automatique, l'enchère actuelle est juste le minimum, sinon c'est le montant complet
+    enchereActuelle.value = enchereAutomatique.value ? enchereMinimale.value : montantOffre.value
     const montantOffreActuel = montantOffre.value
     montantOffre.value = null
+    enchereAutomatique.value = false
     fermerModalEnchere()
     // Réinitialiser le formulaire
     formEnchere.value = {
@@ -1028,6 +1077,76 @@ onUnmounted(() => {
   font-weight: 600;
   color: #374151;
   margin-bottom: 0.5rem;
+}
+
+/* Boutons d'enchères rapides */
+.quick-bid-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.btn-quick-bid {
+  padding: 0.875rem 1rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-quick-bid:hover {
+  border-color: #667eea;
+  background: #f3f4f6;
+}
+
+.btn-quick-bid.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+/* Enchère automatique */
+.auto-bid-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #fef3c7;
+  border-radius: 8px;
+  border: 1px solid #fde68a;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #92400e;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.auto-bid-info {
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #92400e;
+  margin: 0;
+}
+
+.auto-bid-info svg {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
 }
 
 .bid-input-group {

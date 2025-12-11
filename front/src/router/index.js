@@ -4,6 +4,7 @@ import PublierObjet from '../components/PublierObjet.vue'
 import MesObjets from '../components/MesObjets.vue'
 import ArticleDetailView from '../views/ArticleDetailView.vue'
 import ArticleDetailClientView from '../views/ArticleDetailClientView.vue'
+import RechercheView from '../views/RechercheView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,14 @@ const router = createRouter({
       component: PublierObjet,
       meta: {
         title: 'Publier un objet'
+      }
+    },
+    {
+      path: '/recherche',
+      name: 'recherche',
+      component: RechercheView,
+      meta: {
+        title: 'Rechercher un objet'
       }
     },
     {
