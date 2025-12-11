@@ -24,7 +24,7 @@
                 v-model="formData.nom"
                 required
                 placeholder="Ex: Vase Art Déco en cristal"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                class="input"
               />
             </div>
 
@@ -32,12 +32,7 @@
               <label for="categorie" class="block text-sm font-medium text-gray-700 mb-1">
                 Catégorie
               </label>
-              <select
-                id="categorie"
-                v-model="formData.categorie"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
-              >
+              <select id="categorie" v-model="formData.categorie" required class="input">
                 <option value="" disabled>Sélectionnez une catégorie</option>
                 <option value="Bijoux & montres">Bijoux & montres</option>
                 <option value="Meubles anciens">Meubles anciens</option>
@@ -85,7 +80,7 @@
                   placeholder="0"
                   min="0"
                   step="0.1"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                  class="input"
                 />
               </div>
 
@@ -101,7 +96,7 @@
                   placeholder="0"
                   min="0"
                   step="0.1"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                  class="input"
                 />
               </div>
 
@@ -117,7 +112,7 @@
                   placeholder="0"
                   min="0"
                   step="0.1"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                  class="input"
                 />
               </div>
             </div>
@@ -134,7 +129,7 @@
                 placeholder="0"
                 min="0"
                 step="0.1"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                class="input"
               />
             </div>
 
@@ -148,7 +143,7 @@
                 required
                 placeholder="Décrivez votre objet en détail : époque, matériaux, état, provenance..."
                 rows="6"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 resize-y"
+                class="input resize-y"
               ></textarea>
               <span class="text-sm text-gray-500 text-right block mt-1">
                 {{ formData.description.length }} caractères
@@ -286,7 +281,7 @@
                 placeholder="0"
                 min="0"
                 step="0.01"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900"
+                class="input"
               />
             </div>
 
