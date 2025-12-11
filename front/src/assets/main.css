@@ -10,7 +10,7 @@
    THEME / VARIABLES TAILWIND 4
 ============================= */
 @theme {
-  --color-primary: #00bd79;
+  --color-primary: #4a2576; /* couleur du logo en tandque couleur principal */
   --color-secondary: #ff9800;
 }
 
