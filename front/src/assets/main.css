@@ -1,4 +1,10 @@
+@import "tailwindcss";
 @import './base.css';
+@import "./responsive.css";
+@import "./footer.css";
+@import "./header.css";
+@import "./message.css";
+@import "./style.css";
 
 #app {
   margin: 0 auto;
