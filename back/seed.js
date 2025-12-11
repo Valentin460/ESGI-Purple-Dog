@@ -1,3 +1,8 @@
+// ==========================================
+// Script de Seed Complet - Purple Dog
+// Remplir TOUTES les tables avec des données de test
+// ==========================================
+
 const { pool } = require('./config/db');
 const bcrypt = require('bcrypt');
 

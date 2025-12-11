@@ -63,6 +63,71 @@ app.get('/', (req, res) => {
   });
 });
 
+// Health check (pour Docker healthcheck)
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Test de connexion à la base de données
+app.get('/api/db-test', async (req, res) => {
+  try {
+    const { pool } = require('./config/db');
+    const result = await pool.query(`
+      SELECT 
+        NOW() as current_time, 
+        version() as pg_version,
+        current_database() as database_name
+    `);
+    
+    res.json({
+      success: true,
+      database: {
+        connected: true,
+        time: result.rows[0].current_time,
+        version: result.rows[0].pg_version.split(' ')[0],
+        database: result.rows[0].database_name
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      database: {
+        connected: false,
+        error: error.message
+      }
+    });
+  }
+});
+
+// ==========================================
+// Import des routes API
+// ==========================================
+
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
+const stripeRoutes = require('./routes/stripe');
+// Ajouter ici les futures routes :
+// const categoryRoutes = require('./routes/category.routes');
+// const itemRoutes = require('./routes/item.routes');
+
+// Routes d'authentification
+app.use('/api/auth', authRoutes);
+
+// Routes des utilisateurs
+app.use('/api/users', userRoutes);
+
+// Routes Stripe
+app.use('/api/stripe', stripeRoutes);
+
+// Routes futures
+// app.use('/api/categories', categoryRoutes);
+// app.use('/api/items', itemRoutes);
+
 // Gestion des erreurs 404
 app.use((req, res) => {
   res.status(404).json({ 

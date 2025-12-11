@@ -1,12 +1,11 @@
-// ==========================================
-// Service: Stripe
-// Responsabilité: Gestion des paiements Stripe
-// ==========================================
-
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 class StripeService {
-
+  
+  // ==========================================
+  // CUSTOMERS
+  // ==========================================
+  
   /**
    * Créer un client Stripe
    */

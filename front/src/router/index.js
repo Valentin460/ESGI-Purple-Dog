@@ -5,6 +5,8 @@ import MesObjets from '../components/MesObjets.vue'
 import ArticleDetailView from '../views/ArticleDetailView.vue'
 import ArticleDetailClientView from '../views/ArticleDetailClientView.vue'
 import FeedbackView from '../views/FeedbackView.vue'
+import AuctionWon from '../views/AuctionWon.vue'
+import PaymentSuccess from '../views/PaymentSuccess.vue'
 import AdminDashboardView from '../views/AdminDashboardView.vue'
 
 const router = createRouter({
@@ -68,6 +70,15 @@ const router = createRouter({
       redirect: '/feedback'
     },
     {
+      path: '/auction-won/:id',
+      name: 'AuctionWon',
+      component: AuctionWon
+    },
+    {
+      path: '/payment-success',
+      name: 'PaymentSuccess',
+      component: PaymentSuccess
+    },
       path: '/admin',
       name: 'admin',
       component: AdminDashboardView,
