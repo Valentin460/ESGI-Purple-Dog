@@ -13,6 +13,8 @@
     "dev": "nodemon index.js",
     "start": "node index.js",
     "test": "jest",
+    "migrate": "node migrate.js",
+    "seed": "node seed.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",
@@ -20,12 +22,6 @@
   },
   "dependencies": {
     "@prisma/client": "^5.8.0",
-    "test": "jest",
-    "seed": "node seed.js",
-    "migrate": "node migrate.js",
-    "start": "nodemon index.js"
-  },
-  "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
