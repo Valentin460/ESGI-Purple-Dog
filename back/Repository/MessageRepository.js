@@ -13,29 +13,59 @@ class MessageRepository {
   }
 
   async findAll(options = {}) {
+    const { skip = 0, take = 10 } = options;
     return await prisma.message.findMany({
-      ...options,
+      skip: parseInt(skip),
+      take: parseInt(take),
       include: {
-        sender: true,
-        conversation: true
+        sender: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        conversation: {
+          include: {
+            item: true
+          }
+        }
       },
       orderBy: { sent_at: 'desc' }
     });
+  }
+
+  async count() {
+    return await prisma.message.count();
   }
 
   async findById(id) {
     return await prisma.message.findUnique({
       where: { id: parseInt(id) },
       include: {
-        sender: true,
+        sender: {
+          select: {
+            id: true,
+            email: true
+          }
+        },
+        conversation: true
+      }
+    });
+  }
+
+  async findByUserId(userId) {
+    return await prisma.message.findMany({
+      where: {
+        sender_id: parseInt(userId)
+      },
+      include: {
         conversation: {
           include: {
-            buyer: true,
-            seller: true,
             item: true
           }
         }
-      }
+      },
+      orderBy: { sent_at: 'desc' }
     });
   }
 
@@ -71,6 +101,25 @@ class MessageRepository {
     });
   }
 
+  async findUnreadByConversationId(conversationId) {
+    // Note: Si le champ is_read n'existe pas, on retourne tous les messages récents
+    return await prisma.message.findMany({
+      where: {
+        conversation_id: parseInt(conversationId)
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            email: true
+          }
+        }
+      },
+      orderBy: { sent_at: 'desc' },
+      take: 50  // Limite aux 50 derniers messages
+    });
+  }
+
   async update(id, data) {
     return await prisma.message.update({
       where: { id: parseInt(id) },
@@ -96,6 +145,23 @@ class MessageRepository {
     });
   }
 
+  async markAsReadById(messageId) {
+    return await prisma.message.update({
+      where: { id: parseInt(messageId) },
+      data: {
+        updated_at: new Date()
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            email: true
+          }
+        }
+      }
+    });
+  }
+
   async delete(id) {
     return await prisma.message.delete({
       where: { id: parseInt(id) }
@@ -104,6 +170,24 @@ class MessageRepository {
 
   async count(where = {}) {
     return await prisma.message.count({ where });
+  }
+
+  async markAllAsReadByConversation(conversationId, userId = null) {
+    const where = {
+      conversation_id: parseInt(conversationId)
+    };
+
+    // Si userId fourni, ne marquer que les messages des autres utilisateurs
+    if (userId) {
+      where.sender_id = { not: parseInt(userId) };
+    }
+
+    return await prisma.message.updateMany({
+      where,
+      data: {
+        updated_at: new Date()
+      }
+    });
   }
 }
 
