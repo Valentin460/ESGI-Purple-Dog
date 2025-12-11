@@ -123,40 +123,6 @@ const requireVerified = (req, res, next) => {
   next();
 };
 
-// ==========================================
-// Middleware: Rate limiting simple (optionnel)
-// ==========================================
-
-const loginAttempts = new Map();
-
-const rateLimitLogin = (req, res, next) => {
-  const identifier = req.ip || req.headers['x-forwarded-for'];
-  const now = Date.now();
-  const windowMs = 15 * 60 * 1000; // 15 minutes
-  const maxAttempts = 5;
-  
-  if (!loginAttempts.has(identifier)) {
-    loginAttempts.set(identifier, []);
-  }
-  
-  const attempts = loginAttempts.get(identifier);
-  
-  // Nettoyer les anciennes tentatives
-  const recentAttempts = attempts.filter(time => now - time < windowMs);
-  
-  if (recentAttempts.length >= maxAttempts) {
-    return res.status(429).json({
-      success: false,
-      message: 'Too many login attempts. Please try again in 15 minutes.'
-    });
-  }
-  
-  recentAttempts.push(now);
-  loginAttempts.set(identifier, recentAttempts);
-  
-  next();
-};
-
 module.exports = {
   authenticate,
   authorize,

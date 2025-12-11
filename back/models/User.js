@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 
 class User {
 
-  // CREATE - Créer un utilisateur
+  // CREATE - Créer un utilisateur (seulement la table users)
   static async create({ email, password, user_type }) {
     try {
       // Hasher le mot de passe
@@ -15,9 +15,9 @@ class User {
       const password_hash = await bcrypt.hash(password, saltRounds);
       
       const query = `
-        INSERT INTO users (email, password_hash, user_type)
-        VALUES ($1, $2, $3)
-        RETURNING id, email, user_type, is_verified, is_active, created_at
+        INSERT INTO users (email, password_hash, user_type, updated_at)
+        VALUES ($1, $2, $3, NOW())
+        RETURNING id, email, user_type, is_verified, is_active, created_at, updated_at
       `;
       
       const values = [email, password_hash, user_type];
@@ -25,6 +25,94 @@ class User {
       
       return result.rows[0];
       
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // CREATE - Créer le profil individual
+  static async createIndividualProfile(userId, profileData) {
+    try {
+      const {
+        first_name,
+        last_name,
+        postal_address,
+        age_verified = false,
+        over_18_certified = false,
+        newsletter_subscribed = false,
+        rgpd_accepted = true
+      } = profileData;
+
+      const query = `
+        INSERT INTO individuals (
+          user_id, first_name, last_name, postal_address,
+          age_verified, over_18_certified, newsletter_subscribed,
+          rgpd_accepted, rgpd_accepted_at, updated_at
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+        RETURNING *
+      `;
+
+      const values = [
+        userId,
+        first_name,
+        last_name,
+        postal_address,
+        age_verified,
+        over_18_certified,
+        newsletter_subscribed,
+        rgpd_accepted
+      ];
+
+      const result = await pool.query(query, values);
+      return result.rows[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // CREATE - Créer le profil professional
+  static async createProfessionalProfile(userId, profileData) {
+    try {
+      const {
+        first_name,
+        last_name,
+        company_name,
+        siret_number,
+        postal_address,
+        website,
+        specialties,
+        sought_items,
+        social_networks,
+        newsletter_subscribed = false
+      } = profileData;
+
+      const query = `
+        INSERT INTO professionals (
+          user_id, first_name, last_name, company_name, siret_number,
+          postal_address, website, specialties, sought_items, social_networks,
+          newsletter_subscribed, updated_at
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
+        RETURNING *
+      `;
+
+      const values = [
+        userId,
+        first_name,
+        last_name,
+        company_name,
+        siret_number,
+        postal_address,
+        website || null,
+        specialties ? JSON.stringify(specialties) : null,
+        sought_items ? JSON.stringify(sought_items) : null,
+        social_networks ? JSON.stringify(social_networks) : null,
+        newsletter_subscribed
+      ];
+
+      const result = await pool.query(query, values);
+      return result.rows[0];
     } catch (error) {
       throw error;
     }
@@ -130,7 +218,7 @@ class User {
   
   static async update(id, updates) {
     try {
-      const allowedFields = ['email', 'is_verified', 'is_active'];
+      const allowedFields = ['email', 'is_verified', 'is_active', 'verification_token'];
       const fields = [];
       const values = [];
       let paramCount = 1;
