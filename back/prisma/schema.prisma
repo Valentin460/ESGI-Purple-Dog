@@ -25,16 +25,16 @@ model User {
   // Relations
   individual           Individual?
   professional         Professional?
-  items_sold           Item[]               @relation("Seller")
+  items_sold           Item[]         @relation("Seller")
   bids                 Bid[]
-  conversations_buyer  Conversation[]       @relation("Buyer")
-  conversations_seller Conversation[]       @relation("Seller")
+  conversations_buyer  Conversation[] @relation("Buyer")
+  conversations_seller Conversation[] @relation("Seller")
   messages_sent        Message[]
-  transactions_seller  Transaction[]        @relation("Seller")
-  transactions_buyer   Transaction[]        @relation("Buyer")
-  auctions_won         Auction[]            @relation("Winner")
-  reviews_given        Review[]             @relation("Reviewer")
-  reviews_received     Review[]             @relation("Reviewed")
+  transactions_seller  Transaction[]  @relation("Seller")
+  transactions_buyer   Transaction[]  @relation("Buyer")
+  auctions_won         Auction[]      @relation("Winner")
+  reviews_given        Review[]       @relation("Reviewer")
+  reviews_received     Review[]       @relation("Reviewed")
   notifications        Notification[]
   subscriptions        Subscription[]
 
@@ -51,18 +51,18 @@ enum UserType {
 // Individuals
 // ==========================================
 model Individual {
-  id                    Int     @id @default(autoincrement())
-  user_id               Int     @unique
+  id                    Int       @id @default(autoincrement())
+  user_id               Int       @unique
   first_name            String
   last_name             String
   display_name          String?
   profile_picture       String?
   postal_address        String
-  age_verified          Boolean @default(false)
-  over_18_certified     Boolean @default(false)
+  age_verified          Boolean   @default(false)
+  over_18_certified     Boolean   @default(false)
   identity_document     String?
-  newsletter_subscribed Boolean @default(false)
-  rgpd_accepted         Boolean @default(false)
+  newsletter_subscribed Boolean   @default(false)
+  rgpd_accepted         Boolean   @default(false)
   rgpd_accepted_at      DateTime?
 
   created_at DateTime @default(now())
@@ -78,21 +78,21 @@ model Individual {
 // Professionals
 // ==========================================
 model Professional {
-  id                Int       @id @default(autoincrement())
-  user_id           Int       @unique
-  first_name        String
-  last_name         String
-  company_name      String
-  siret_number      String    @unique
-  official_document String?
-  postal_address    String
-  website           String?
-  specialties       Json?
-  sought_items      Json?
-  social_networks   Json?
-  newsletter_subscribed Boolean @default(false)
-  mandate_signed    Boolean   @default(false)
-  mandate_signed_at DateTime?
+  id                    Int       @id @default(autoincrement())
+  user_id               Int       @unique
+  first_name            String
+  last_name             String
+  company_name          String
+  siret_number          String    @unique
+  official_document     String?
+  postal_address        String
+  website               String?
+  specialties           Json?
+  sought_items          Json?
+  social_networks       Json?
+  newsletter_subscribed Boolean   @default(false)
+  mandate_signed        Boolean   @default(false)
+  mandate_signed_at     DateTime?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -150,6 +150,8 @@ model Item {
   transactions  Transaction[]
   conversations Conversation[]
   notifications Notification[]
+  images        ItemImage[]
+  documents     ItemDocument[]
 
   @@map("items")
 }
@@ -246,6 +248,45 @@ model Bid {
   bidder  User    @relation(fields: [bidder_id], references: [id], onDelete: Cascade)
 
   @@map("bids")
+}
+
+// ==========================================
+// Item Images
+// ==========================================
+model ItemImage {
+  id       Int     @id @default(autoincrement())
+  item_id  Int
+  url      String
+  alt_text String?
+  position Int     @default(0)
+  is_main  Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  item Item @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@map("item_images")
+}
+
+// ==========================================
+// Item Documents
+// ==========================================
+model ItemDocument {
+  id       Int    @id @default(autoincrement())
+  item_id  Int
+  url      String
+  filename String
+  type     String @default("OTHER") // CERTIFICATE, INVOICE, EXPERTISE, OTHER
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  item Item @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@map("item_documents")
 }
 
 // ==========================================
@@ -399,12 +440,12 @@ enum SubscriptionStatus {
 // Subscription Plans
 // ==========================================
 model SubscriptionPlan {
-  id             Int      @id @default(autoincrement())
+  id             Int     @id @default(autoincrement())
   name           String
-  price          Decimal  @db.Decimal(10, 2)
+  price          Decimal @db.Decimal(10, 2)
   billing_period String?
   features       Json?
-  is_active      Boolean  @default(true)
+  is_active      Boolean @default(true)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

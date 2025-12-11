@@ -394,16 +394,18 @@
           <button
             type="button"
             @click="handleCancel"
-            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-200 transition-colors"
+            :disabled="isLoading"
+            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Annuler
           </button>
           <button
             type="submit"
-            :disabled="isSubmitting"
-            class="px-6 py-3 bg-primary text-white rounded-md font-semibold hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            :disabled="isLoading"
+            class="px-6 py-3 bg-primary text-white rounded-md font-semibold hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
-            {{ isSubmitting ? 'Publication en cours...' : "Publier l'objet" }}
+            <Loader2Icon v-if="isLoading" class="inline-block animate-spin" />
+            {{ isLoading ? 'Publication en cours...' : "Publier l'objet" }}
           </button>
         </div>
       </form>
@@ -421,8 +423,12 @@ import {
   HammerIcon,
   ZapIcon,
   CheckIcon,
+  Loader2Icon,
 } from 'lucide-vue-next'
 import ArticleDetail from './ArticleDetail.vue'
+import { useItemPublishing } from '../composables/useItemPublishing'
+
+const { publishItem, isLoading } = useItemPublishing()
 
 const formData = ref({
   nom: '',
@@ -444,11 +450,25 @@ const formData = ref({
 
 const photosInput = ref(null)
 const documentsInput = ref(null)
-const isSubmitting = ref(false)
 const error = ref('')
 const success = ref(false)
 const photosError = ref('')
 const articlePublie = ref(null)
+
+// Récupérer l'ID du vendeur depuis le localStorage ou le store
+const getSellerId = () => {
+  const user = localStorage.getItem('user')
+  if (user) {
+    try {
+      const userData = JSON.parse(user)
+      return userData.id
+    } catch (e) {
+      console.error('Erreur parsing user:', e)
+    }
+  }
+  // Utiliser 1 comme fallback pour tester
+  return 1
+}
 
 // Calculer le prix de départ automatiquement (-10% du prix souhaité)
 const prixDepartRecommande = computed(() => {
@@ -591,22 +611,25 @@ const handleSubmit = async () => {
     }
   }
 
-  isSubmitting.value = true
-
   try {
-    // Simulation de l'envoi du formulaire
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    const sellerId = getSellerId()
 
-    // Ici, vous enverriez les données au backend
-    console.log("Données de l'objet:", formData.value)
+    const result = await publishItem(formData.value, sellerId)
 
-    // Afficher l'article publié
-    articlePublie.value = { ...formData.value }
-    success.value = true
-  } catch {
-    error.value = 'Une erreur est survenue lors de la publication. Veuillez réessayer.'
-  } finally {
-    isSubmitting.value = false
+    if (result.success) {
+      // Afficher l'article publié
+      articlePublie.value = {
+        ...formData.value,
+        ...result.data,
+      }
+      success.value = true
+    } else {
+      error.value = result.message || 'Erreur lors de la publication'
+    }
+  } catch (err) {
+    error.value =
+      err.message || 'Une erreur est survenue lors de la publication. Veuillez réessayer.'
+    console.error('Erreur publication:', err)
   }
 }
 </script>

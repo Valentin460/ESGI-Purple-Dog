@@ -14,6 +14,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Servir les fichiers uploadés statiquement
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // ==========================================
 // Routes
 // ==========================================
@@ -32,8 +36,14 @@ const subscriptionPlanRoutes = require('./routes/SubscriptionPlanRoutes');
 const subscriptionRoutes = require('./routes/SubscriptionRoutes');
 const transactionRoutes = require('./routes/TransactionRoutes');
 
+// Routes pour la publication et les médias
+const publishingRoutes = require('./routes/PublishingRoutes');
+const mediaRoutes = require('./routes/MediaRoutes');
+
 // Enregistre les routes
 app.use('/items', itemRoutes);
+app.use('/items', publishingRoutes);
+app.use('/items', mediaRoutes);
 app.use('/users', userRoutes);
 app.use('/individuals', individualRoutes);
 app.use('/professionals', professionalRoutes);
