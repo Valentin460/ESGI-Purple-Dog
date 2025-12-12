@@ -25,7 +25,7 @@ const itemRoutes = require('./Routes/ItemsRoutes');
 const userRoutes = require('./routes/UserRoutes');
 const individualRoutes = require('./routes/IndividualsRoutes');
 const professionalRoutes = require('./routes/ProfessionalsRoutes');
-const categoryRoutes = require('./routes/CategoryRoutes');
+const categoryRoutes = require('./Routes/CategoryRoutes');
 const auctionRoutes = require('./routes/AuctionRoutes');
 const bidRoutes = require('./routes/BidRoutes');
 const conversationRoutes = require('./routes/ConversationRoutes');
@@ -35,28 +35,27 @@ const notificationRoutes = require('./routes/NotificationRoutes');
 const subscriptionPlanRoutes = require('./routes/SubscriptionPlanRoutes');
 const subscriptionRoutes = require('./routes/SubscriptionRoutes');
 const transactionRoutes = require('./routes/TransactionRoutes');
-
-// Routes pour la publication et les médias
 const publishingRoutes = require('./routes/PublishingRoutes');
 const mediaRoutes = require('./routes/MediaRoutes');
 
-// Enregistre les routes
-app.use('/items', itemRoutes);
-app.use('/items', publishingRoutes);
-app.use('/items', mediaRoutes);
-app.use('/users', userRoutes);
-app.use('/individuals', individualRoutes);
-app.use('/professionals', professionalRoutes);
+// Enregistre les routes avec préfixe /api
+app.use('/api/items', itemRoutes);
+app.use('/api/items', publishingRoutes);
+app.use('/api/items', mediaRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/individuals', individualRoutes);
+app.use('/api/professionals', professionalRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/auctions', auctionRoutes);
+app.use('/api/bids', bidRoutes);
+app.use('/api/conversations', conversationRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/subscription-plans', subscriptionPlanRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/transactions', transactionRoutes);
 app.use('/categories', categoryRoutes);
-app.use('/auctions', auctionRoutes);
-app.use('/bids', bidRoutes);
-app.use('/conversations', conversationRoutes);
-app.use('/messages', messageRoutes);
-app.use('/reviews', reviewRoutes);
-app.use('/notifications', notificationRoutes);
-app.use('/subscription-plans', subscriptionPlanRoutes);
-app.use('/subscriptions', subscriptionRoutes);
-app.use('/transactions', transactionRoutes);
 
 // Route de test
 app.get('/', (req, res) => {

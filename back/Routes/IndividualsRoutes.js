@@ -17,6 +17,9 @@ router.post('/:id/accept-rgpd', IndividualController.acceptRGPD);
 // GET - Par user_id
 router.get('/user/:userId', IndividualController.getIndividualByUserId);
 
+// PUT - Mettre à jour par user_id
+router.put('/user/:userId', IndividualController.updateIndividualByUserId);
+
 // GET - Par ID
 router.get('/:id', IndividualController.getIndividualById);
 

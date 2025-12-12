@@ -9,8 +9,11 @@ class SubscriptionPlanRepository {
   }
 
   async findAll(options = {}) {
+    const { skip = 0, take = 10, where = {} } = options;
     return await prisma.subscriptionPlan.findMany({
-      ...options,
+      skip: parseInt(skip),
+      take: parseInt(take),
+      where,
       orderBy: { price: 'asc' }
     });
   }
@@ -19,13 +22,22 @@ class SubscriptionPlanRepository {
     return await prisma.subscriptionPlan.findUnique({
       where: { id: parseInt(id) },
       include: {
-        subscriptions: true
+        subscriptions: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true
+              }
+            }
+          }
+        }
       }
     });
   }
 
   async findByName(name) {
-    return await prisma.subscriptionPlan.findUnique({
+    return await prisma.subscriptionPlan.findFirst({
       where: { name }
     });
   }

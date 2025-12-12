@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import PublierObjet from '../components/PublierObjet.vue'
 import MesObjets from '../components/MesObjets.vue'
@@ -6,6 +7,7 @@ import ArticleDetailView from '../views/ArticleDetailView.vue'
 import ArticleDetailClientView from '../views/ArticleDetailClientView.vue'
 import RechercheView from '../views/RechercheView.vue'
 import FeedbackView from '../views/FeedbackView.vue'
+import BackOfficeDashboard from '../views/BackOfficeDashboard.vue'
 import AuctionWon from '../views/AuctionWon.vue'
 import PaymentSuccess from '../views/PaymentSuccess.vue'
 import AdminDashboardView from '../views/AdminDashboardView.vue'
@@ -13,6 +15,14 @@ import AdminDashboardView from '../views/AdminDashboardView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView,
+      meta: {
+        title: 'Purple Dog - Collection d\'Exception'
+      }
+    },
     {
       path: '/publier',
       name: 'publier-objet',
@@ -76,6 +86,14 @@ const router = createRouter({
     {
       path: '/avis',
       redirect: '/feedback'
+    },
+    {
+      path: '/backoffice',
+      name: 'backoffice',
+      component: BackOfficeDashboard,
+      meta: {
+        title: 'Back Office - Dashboard'
+      }
     },
     {
       path: '/auction-won/:id',

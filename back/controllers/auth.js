@@ -10,7 +10,21 @@ class AuthController {
   
   static async register(req, res) {
     try {
-      const { email, password, user_type } = req.body;
+      const { 
+        email, 
+        password, 
+        user_type,
+        first_name,
+        last_name,
+        address,
+        age,
+        company_name,
+        siret,
+        website,
+        specialties,
+        searched_objects,
+        social_media
+      } = req.body;
       
       // Validation des champs non vide
       if (!email || !password || !user_type) {
@@ -54,12 +68,38 @@ class AuthController {
         });
       }
       
-      // Créer l'utilisateur (le mot de passe sera hashé dans le modèle)
+      // 1. Créer l'utilisateur dans la table users
       const user = await User.create({
         email,
         password,
         user_type
       });
+
+      // 2. Créer le profil selon le type
+      if (user_type === 'individual') {
+        await User.createIndividualProfile(user.id, {
+          first_name: first_name || 'Prénom',
+          last_name: last_name || 'Nom',
+          postal_address: address || 'Adresse non renseignée',
+          age_verified: age ? true : false,
+          over_18_certified: age >= 18,
+          newsletter_subscribed: false,
+          rgpd_accepted: true
+        });
+      } else if (user_type === 'professional') {
+        await User.createProfessionalProfile(user.id, {
+          first_name: first_name || 'Prénom',
+          last_name: last_name || 'Nom',
+          company_name: company_name || 'Entreprise',
+          siret_number: siret || '00000000000000',
+          postal_address: address || 'Adresse non renseignée',
+          website: website || null,
+          specialties: specialties || null,
+          sought_items: searched_objects || null,
+          social_networks: social_media || null,
+          newsletter_subscribed: false
+        });
+      }
       
       // Générer un token de vérification
       const verificationToken = crypto.randomBytes(32).toString('hex');

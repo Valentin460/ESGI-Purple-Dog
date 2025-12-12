@@ -1,7 +1,11 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useCamera } from '../composables/useCamera';
 import { useEmailConfirmation } from '../composables/useEmailConfirmation';
+import authService from '@/services/auth.service';
+
+const router = useRouter();
 
 const user = ref({
   firstname: '',
@@ -74,12 +78,26 @@ const onSubmit = async () => {
     alert('Vous devez avoir plus de 18 ans pour créer un compte');
     return;
   }
-  
-  // Envoyer l'email de confirmation
-  const success = await sendConfirmationEmail(user.value.email, user.value.firstname, 'particulier');
-  
-  if (success) {
-    // Réinitialiser le formulaire après 3 secondes
+
+  try {
+    // Préparer les données pour l'inscription
+    const registerData = {
+      email: user.value.email,
+      password: user.value.password,
+      first_name: user.value.firstname,
+      last_name: user.value.lastname,
+      address: user.value.address,
+      age: user.value.age,
+      user_type: 'individual'
+    };
+
+    // Appel API via authService
+    await authService.register(registerData);
+
+    // Envoyer l'email de confirmation
+    await sendConfirmationEmail(user.value.email, user.value.firstname, 'particulier');
+
+    // Réinitialiser le formulaire et rediriger après 3 secondes
     setTimeout(() => {
       user.value = {
         firstname: '',
@@ -95,7 +113,14 @@ const onSubmit = async () => {
       photoPreview.value = null;
       photoError.value = '';
       reset();
+
+      // Rediriger vers la page de connexion
+      router.push('/auth/login');
     }, 3000);
+
+  } catch (error) {
+    console.error('Erreur lors de l\'inscription:', error);
+    alert(error.message || 'Erreur lors de l\'inscription. Veuillez réessayer.');
   }
 };
 </script>
@@ -108,8 +133,8 @@ const onSubmit = async () => {
           Créer votre espace Particulier
         </h1>
       </div>
-      
-      <form class="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md" @submit.prevent="onSubmit()"> 
+
+      <form class="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md" @submit.prevent="onSubmit()">
         <div class="space-y-6">
           <!-- Photo de profil -->
           <div class="flex flex-col items-center">
@@ -172,7 +197,7 @@ const onSubmit = async () => {
             <p v-if="photoError" class="text-sm text-red-600">{{ photoError }}</p>
           </div>
 
-         
+
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label for="firstname" class="block font-medium mb-2 text-gray-800">Prénom :</label>
@@ -217,13 +242,13 @@ const onSubmit = async () => {
               <label for="age" class="block font-medium mb-2 text-gray-800">Âge :</label>
               <input id="age" v-model.number="user.age" type="number" required placeholder="Votre âge" min="13" max="120" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 text-black bg-gray-200 focus:ring-gray-300 mb-2">
             </div>
-            
+
             <div class="flex items-start gap-3 bg-blue-50 p-4 rounded border border-blue-200">
-              <input 
-                id="is-over-18" 
-                v-model="user.isOver18" 
-                type="checkbox" 
-                required 
+              <input
+                id="is-over-18"
+                v-model="user.isOver18"
+                type="checkbox"
+                required
                 class="w-5 h-5 mt-1 accent-green-800"
               >
               <label for="is-over-18" class="text-sm text-gray-700">
@@ -244,12 +269,12 @@ const onSubmit = async () => {
               <p class="text-sm text-gray-700">Je souhaite m'abonner à la <RouterLink to="/newsletter" target="_blank" class="text-blue-700 hover:underline font-semibold">newsletter Purple Dog</RouterLink> (optionnel)</p>
             </div>
           </div>
-          
+
           <!-- Bouton soumettre -->
           <div class="pt-4">
             <input type="submit" value="Créer mon compte" class="w-full accent-green-800 text-white font-semibold py-3 rounded hover:bg-green-850 transition cursor-pointer">
           </div>
-          
+
           <!-- Lien connexion -->
           <div class="text-center pt-2">
             <RouterLink to="/auth/login" class="hover:text-blue-700 text-blue-800 font-bold transition">
