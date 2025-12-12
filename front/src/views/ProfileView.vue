@@ -527,6 +527,7 @@ const cancelEdit = () => {
   font-family: inherit;
   transition: all 0.2s;
   background-color: white;
+  color: #1a1a1a;
 }
 
 .form-group input:focus {
@@ -537,7 +538,7 @@ const cancelEdit = () => {
 
 .form-group input:disabled {
   background-color: #f5f5f5;
-  color: #666;
+  color: #1a1a1a;
   cursor: not-allowed;
 }
 

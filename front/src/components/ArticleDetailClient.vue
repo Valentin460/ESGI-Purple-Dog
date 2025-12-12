@@ -1161,6 +1161,7 @@ onUnmounted(() => {
   border-radius: 8px;
   font-size: 1.25rem;
   font-weight: 600;
+  color: #1a1a1a;
   transition: all 0.2s;
 }
 
@@ -1805,6 +1806,7 @@ onUnmounted(() => {
   border: 2px solid #e5e7eb;
   border-radius: 8px;
   font-size: 1rem;
+  color: #1a1a1a;
   transition: all 0.2s;
 }
 
