@@ -56,7 +56,7 @@ export const useItemPublishing = () => {
         })
       }
 
-      const response = await fetch(`${API_BASE_URL}/items/publish`, {
+      const response = await fetch(`${API_BASE_URL}/api/items/publish`, {
         method: 'POST',
         body: data
         // Ne pas définir Content-Type, le navigateur le fera automatiquement
@@ -121,7 +121,7 @@ export const useItemPublishing = () => {
    */
   const getItemDetails = async (itemId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/items/${itemId}/details`)
+      const response = await fetch(`${API_BASE_URL}/api/items/${itemId}/details`)
 
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des détails')
@@ -145,7 +145,7 @@ export const useItemPublishing = () => {
    */
   const getItemImages = async (itemId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/items/${itemId}/images`)
+      const response = await fetch(`${API_BASE_URL}/api/items/${itemId}/images`)
 
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des images')
@@ -169,7 +169,7 @@ export const useItemPublishing = () => {
    */
   const getItemDocuments = async (itemId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/items/${itemId}/documents`)
+      const response = await fetch(`${API_BASE_URL}/api/items/${itemId}/documents`)
 
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des documents')
@@ -193,7 +193,7 @@ export const useItemPublishing = () => {
    */
   const deleteImage = async (itemId, imageId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/items/${itemId}/images/${imageId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/items/${itemId}/images/${imageId}`, {
         method: 'DELETE'
       })
 
@@ -214,7 +214,7 @@ export const useItemPublishing = () => {
    */
   const deleteDocument = async (itemId, documentId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/items/${itemId}/documents/${documentId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/items/${itemId}/documents/${documentId}`, {
         method: 'DELETE'
       })
 
