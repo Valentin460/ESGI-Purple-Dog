@@ -156,10 +156,10 @@
     <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl" @click.stop>
       <h2 class="text-3xl font-bold text-center mb-6">Choisissez votre profil</h2>
       <p class="text-gray-600 text-center mb-8">Sélectionnez le type de compte que vous souhaitez créer</p>
-      
+
       <div class="space-y-4">
-        <RouterLink 
-          to="/auth/register/particulier" 
+        <RouterLink
+          to="/auth/register/particulier"
           @click="showRegisterModal = false"
           class="block w-full p-6 border-2 border-gray-300 rounded-lg hover:border-indigo-600 hover:bg-indigo-50 transition text-center"
         >
@@ -170,8 +170,8 @@
           <p class="text-sm text-gray-600">Créer un compte personnel pour acheter des œuvres d'art</p>
         </RouterLink>
 
-        <RouterLink 
-          to="/auth/register/professionnel" 
+        <RouterLink
+          to="/auth/register/professionnel"
           @click="showRegisterModal = false"
           class="block w-full p-6 border-2 border-gray-300 rounded-lg hover:border-indigo-600 hover:bg-indigo-50 transition text-center"
         >
@@ -183,8 +183,8 @@
         </RouterLink>
       </div>
 
-      <button 
-        @click="showRegisterModal = false" 
+      <button
+        @click="showRegisterModal = false"
         class="mt-6 w-full py-2 text-gray-600 hover:text-gray-900 transition"
       >
         Annuler
@@ -194,17 +194,109 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-const isAuthenticated = ref(false)
-const user = ref({
-  name: 'Utilisateur'
-})
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import authService from '@/services/auth.service'
 
 const showRegisterModal = ref(false)
 const isSecondaryOpen = ref(false)
-
 const query = ref('')
+const userData = ref(null)
+const authState = ref(authService.isAuthenticated())
+
+// Vérifier l'authentification
+const isAuthenticated = computed(() => {
+  return authState.value
+})
+
+// Récupérer les infos utilisateur
+const user = computed(() => {
+  if (!userData.value) return { name: 'Utilisateur' }
+
+  const userInfo = userData.value
+  // Construire le nom depuis le profil
+  if (userInfo.first_name && userInfo.last_name) {
+    return { name: `${userInfo.first_name} ${userInfo.last_name}` }
+  }
+  return { name: userInfo.email || 'Utilisateur' }
+})
+
+// Fonction pour charger les données utilisateur
+const loadUserData = async () => {
+  if (authService.isAuthenticated()) {
+    try {
+      const response = await authService.getCurrentUser()
+      if (response.success && response.data) {
+        userData.value = response.data
+
+        // Récupérer aussi le profil selon le type
+        const userId = response.data.id
+        const userType = response.data.user_type
+
+        if (userType === 'individual') {
+          const profileResponse = await fetch(`http://localhost:3000/api/individuals/user/${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${authService.getToken()}`
+            }
+          })
+          if (profileResponse.ok) {
+            const profileData = await profileResponse.json()
+            userData.value = { ...response.data, ...profileData.data }
+          }
+        } else if (userType === 'professional') {
+          const profileResponse = await fetch(`http://localhost:3000/api/professionals/user/${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${authService.getToken()}`
+            }
+          })
+          if (profileResponse.ok) {
+            const profileData = await profileResponse.json()
+            userData.value = { ...response.data, ...profileData.data }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Erreur chargement profil:', error)
+    }
+  } else {
+    userData.value = null
+  }
+}
+
+// Listener pour les changements de localStorage
+const handleStorageChange = (e) => {
+  // Détecter les changements du token
+  if (e.key === 'token' || e.key === null) {
+    authState.value = authService.isAuthenticated()
+    if (!authState.value) {
+      userData.value = null
+    } else {
+      loadUserData()
+    }
+  }
+}
+
+// Charger les données utilisateur au montage
+onMounted(async () => {
+  await loadUserData()
+  // Écouter les changements de localStorage
+  window.addEventListener('storage', handleStorageChange)
+
+  // Écouter aussi un événement custom pour les changements dans le même onglet
+  window.addEventListener('auth-change', () => {
+    authState.value = authService.isAuthenticated()
+    if (!authState.value) {
+      userData.value = null
+    } else {
+      loadUserData()
+    }
+  })
+})
+
+// Nettoyer les listeners
+onUnmounted(() => {
+  window.removeEventListener('storage', handleStorageChange)
+  window.removeEventListener('auth-change', loadUserData)
+})
 
 const onSearch = () => {
   console.log('Recherche depuis le header :', query.value)

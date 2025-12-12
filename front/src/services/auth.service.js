@@ -63,6 +63,8 @@ class AuthService {
   // Sauvegarder le token
   saveToken(token) {
     localStorage.setItem('token', token);
+    // Déclencher un événement pour notifier les composants
+    window.dispatchEvent(new Event('auth-change'));
   }
 
   // Sauvegarder les informations utilisateur
@@ -71,6 +73,8 @@ class AuthService {
     localStorage.setItem('userEmail', user.email);
     localStorage.setItem('userType', user.type || user.user_type);
     localStorage.setItem('user', JSON.stringify(user));
+    // Déclencher un événement pour notifier les composants
+    window.dispatchEvent(new Event('auth-change'));
   }
 
   // Récupérer le token
@@ -96,6 +100,9 @@ class AuthService {
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userType');
     localStorage.removeItem('user');
+
+    // Déclencher un événement custom pour notifier les composants
+    window.dispatchEvent(new Event('auth-change'));
   }
 }
 
