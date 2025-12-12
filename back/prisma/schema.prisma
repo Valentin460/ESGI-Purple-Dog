@@ -1,0 +1,456 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// Users
+// ==========================================
+model User {
+  id                 Int      @id @default(autoincrement())
+  email              String   @unique
+  password_hash      String
+  user_type          UserType
+  is_verified        Boolean  @default(false)
+  is_active          Boolean  @default(true)
+  verification_token String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  individual           Individual?
+  professional         Professional?
+  items_sold           Item[]               @relation("Seller")
+  bids                 Bid[]
+  conversations_buyer  Conversation[]       @relation("Buyer")
+  conversations_seller Conversation[]       @relation("Seller")
+  messages_sent        Message[]
+  transactions_seller  Transaction[]        @relation("Seller")
+  transactions_buyer   Transaction[]        @relation("Buyer")
+  auctions_won         Auction[]            @relation("Winner")
+  reviews_given        Review[]             @relation("Reviewer")
+  reviews_received     Review[]             @relation("Reviewed")
+  notifications        Notification[]
+  subscriptions        Subscription[]
+
+  @@map("users")
+}
+
+enum UserType {
+  individual
+  professional
+  admin
+}
+
+// ==========================================
+// Individuals
+// ==========================================
+model Individual {
+  id                    Int     @id @default(autoincrement())
+  user_id               Int     @unique
+  first_name            String
+  last_name             String
+  display_name          String?
+  profile_picture       String?
+  postal_address        String
+  age_verified          Boolean @default(false)
+  over_18_certified     Boolean @default(false)
+  identity_document     String?
+  newsletter_subscribed Boolean @default(false)
+  rgpd_accepted         Boolean @default(false)
+  rgpd_accepted_at      DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("individuals")
+}
+
+// ==========================================
+// Professionals
+// ==========================================
+model Professional {
+  id                Int       @id @default(autoincrement())
+  user_id           Int       @unique
+  first_name        String
+  last_name         String
+  company_name      String
+  siret_number      String    @unique
+  official_document String?
+  postal_address    String
+  website           String?
+  specialties       Json?
+  sought_items      Json?
+  social_networks   Json?
+  newsletter_subscribed Boolean @default(false)
+  mandate_signed    Boolean   @default(false)
+  mandate_signed_at DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("professionals")
+}
+
+// ==========================================
+// Categories
+// ==========================================
+model Category {
+  id          Int     @id @default(autoincrement())
+  name        String
+  slug        String  @unique
+  description String?
+  is_active   Boolean @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  items ItemCategory[]
+
+  @@map("categories")
+}
+
+// ==========================================
+// Items
+// ==========================================
+model Item {
+  id                 Int        @id @default(autoincrement())
+  seller_id          Int
+  name               String
+  description        String
+  dimensions         String?
+  weight             Decimal?   @db.Decimal(10, 2)
+  desired_price      Decimal    @db.Decimal(10, 2)
+  ai_suggested_price Decimal?   @db.Decimal(10, 2)
+  sale_type          SaleType
+  status             ItemStatus @default(DRAFT)
+  view_count         Int        @default(0)
+
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  published_at DateTime?
+  sold_at      DateTime?
+
+  // Relations
+  seller        User           @relation("Seller", fields: [seller_id], references: [id], onDelete: Cascade)
+  categories    ItemCategory[]
+  auction       Auction?
+  transactions  Transaction[]
+  conversations Conversation[]
+  notifications Notification[]
+
+  @@map("items")
+}
+
+enum SaleType {
+  AUCTION
+  QUICK_SALE
+}
+
+enum ItemStatus {
+  DRAFT
+  PENDING_VALIDATION
+  PUBLISHED
+  IN_AUCTION
+  SOLD
+  CANCELLED
+  EXPIRED
+}
+
+// ==========================================
+// Item Categories
+// ==========================================
+model ItemCategory {
+  id          Int @id @default(autoincrement())
+  item_id     Int
+  category_id Int
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  item     Item     @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@unique([item_id, category_id])
+  @@map("item_categories")
+}
+
+// ==========================================
+// Auctions
+// ==========================================
+model Auction {
+  id                Int           @id @default(autoincrement())
+  item_id           Int           @unique
+  starting_price    Decimal       @db.Decimal(10, 2)
+  reserve_price     Decimal       @db.Decimal(10, 2)
+  current_price     Decimal       @db.Decimal(10, 2)
+  increment_step    Decimal       @db.Decimal(10, 2)
+  start_time        DateTime
+  end_time          DateTime
+  extended_end_time DateTime?
+  winner_id         Int?
+  status            AuctionStatus @default(PENDING)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  item          Item           @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  bids          Bid[]
+  winner        User?          @relation("Winner", fields: [winner_id], references: [id], onDelete: SetNull)
+  notifications Notification[]
+
+  @@map("auctions")
+}
+
+enum AuctionStatus {
+  PENDING
+  ACTIVE
+  EXTENDED
+  COMPLETED
+  NO_WINNER
+  CANCELLED
+}
+
+// ==========================================
+// Bids
+// ==========================================
+model Bid {
+  id                 Int      @id @default(autoincrement())
+  auction_id         Int
+  bidder_id          Int
+  amount             Decimal  @db.Decimal(10, 2)
+  is_autobid         Boolean  @default(false)
+  max_autobid_amount Decimal? @db.Decimal(10, 2)
+  is_winning         Boolean  @default(false)
+
+  bid_time   DateTime @default(now())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  auction Auction @relation(fields: [auction_id], references: [id], onDelete: Cascade)
+  bidder  User    @relation(fields: [bidder_id], references: [id], onDelete: Cascade)
+
+  @@map("bids")
+}
+
+// ==========================================
+// Conversations
+// ==========================================
+model Conversation {
+  id        Int                @id @default(autoincrement())
+  item_id   Int
+  buyer_id  Int
+  seller_id Int
+  status    ConversationStatus @default(ACTIVE)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  item     Item      @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  buyer    User      @relation("Buyer", fields: [buyer_id], references: [id], onDelete: Cascade)
+  seller   User      @relation("Seller", fields: [seller_id], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+enum ConversationStatus {
+  ACTIVE
+  CLOSED
+  BLOCKED
+}
+
+// ==========================================
+// Messages
+// ==========================================
+model Message {
+  id              Int     @id @default(autoincrement())
+  conversation_id Int
+  sender_id       Int
+  content         String
+  is_flagged      Boolean @default(false)
+  flag_reason     String?
+  is_read         Boolean @default(false)
+
+  sent_at    DateTime @default(now())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  conversation Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [sender_id], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+// ==========================================
+// Transactions
+// ==========================================
+model Transaction {
+  id                       Int               @id @default(autoincrement())
+  item_id                  Int
+  seller_id                Int
+  buyer_id                 Int
+  item_price               Decimal           @db.Decimal(10, 2)
+  shipping_cost            Decimal?          @db.Decimal(10, 2)
+  platform_fee_buyer       Decimal           @db.Decimal(10, 2)
+  platform_fee_seller      Decimal           @db.Decimal(10, 2)
+  total_buyer_pays         Decimal           @db.Decimal(10, 2)
+  total_seller_receives    Decimal           @db.Decimal(10, 2)
+  status                   TransactionStatus @default(PENDING_PAYMENT)
+  payment_method           String?
+  stripe_payment_intent_id String?
+  payment_date             DateTime?
+  shipment_tracking        String?
+  funds_released_at        DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  item          Item           @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  seller        User           @relation("Seller", fields: [seller_id], references: [id], onDelete: Cascade)
+  buyer         User           @relation("Buyer", fields: [buyer_id], references: [id], onDelete: Cascade)
+  notifications Notification[]
+
+  @@map("transactions")
+}
+
+enum TransactionStatus {
+  PENDING_PAYMENT
+  PAYMENT_RECEIVED
+  PREPARING_SHIPMENT
+  SHIPPED
+  DELIVERED
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+// ==========================================
+// Reviews
+// ==========================================
+model Review {
+  id          Int     @id @default(autoincrement())
+  reviewer_id Int
+  user_id     Int
+  rating      Int
+  nps_score   Int?
+  comment     String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  reviewer User @relation("Reviewer", fields: [reviewer_id], references: [id], onDelete: Cascade)
+  reviewed User @relation("Reviewed", fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+// ==========================================
+// Subscriptions
+// ==========================================
+model Subscription {
+  id                     Int                @id @default(autoincrement())
+  user_id                Int
+  plan_id                Int
+  status                 SubscriptionStatus
+  started_at             DateTime
+  ends_at                DateTime?
+  trial_ends_at          DateTime?
+  stripe_subscription_id String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [plan_id], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
+}
+
+// ==========================================
+// Subscription Plans
+// ==========================================
+model SubscriptionPlan {
+  id             Int      @id @default(autoincrement())
+  name           String
+  price          Decimal  @db.Decimal(10, 2)
+  billing_period String?
+  features       Json?
+  is_active      Boolean  @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}
+
+// ==========================================
+// Notifications
+// ==========================================
+model Notification {
+  id                     Int              @id @default(autoincrement())
+  user_id                Int
+  type                   NotificationType
+  title                  String
+  content                String
+  related_item_id        Int?
+  related_auction_id     Int?
+  related_transaction_id Int?
+  is_read                Boolean          @default(false)
+  is_email_sent          Boolean          @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user        User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  item        Item?        @relation(fields: [related_item_id], references: [id], onDelete: SetNull)
+  auction     Auction?     @relation(fields: [related_auction_id], references: [id], onDelete: SetNull)
+  transaction Transaction? @relation(fields: [related_transaction_id], references: [id], onDelete: SetNull)
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  NEW_OFFER
+  NEW_BID
+  OUTBID
+  AUCTION_WON
+  AUCTION_LOST
+  ITEM_SOLD
+  PAYMENT_RECEIVED
+  SHIPMENT_UPDATE
+  NEW_MESSAGE
+  ACCOUNT_UPDATE
+}

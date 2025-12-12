@@ -31,21 +31,21 @@
 
       <!-- Statistiques -->
       <div class="stats-section">
-        <div class="stat-item">
+        <div class="stat-item clickable" @click="ouvrirOffres">
           <Gavel :size="20" />
           <div class="stat-content">
             <span class="stat-value">{{ article.nombreOffres || 0 }}</span>
             <span class="stat-label">Offre{{ article.nombreOffres > 1 ? 's' : '' }}</span>
           </div>
         </div>
-        <div class="stat-item">
+        <div class="stat-item clickable" @click="ouvrirMessages">
           <MessageCircle :size="20" />
           <div class="stat-content">
             <span class="stat-value">{{ article.nombreMessages || 0 }}</span>
             <span class="stat-label">Message{{ article.nombreMessages > 1 ? 's' : '' }}</span>
           </div>
         </div>
-        <div class="stat-item">
+        <div class="stat-item clickable" @click="ouvrirFavoris">
           <Heart :size="20" />
           <div class="stat-content">
             <span class="stat-value">{{ article.nombreFavoris || 0 }}</span>
@@ -215,7 +215,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['retour', 'modifier', 'supprimer', 'baisser-prix'])
+const emit = defineEmits(['retour', 'modifier', 'supprimer', 'baisser-prix', 'ouvrir-messages', 'ouvrir-offres', 'ouvrir-favoris'])
 
 const currentPhotoIndex = ref(0)
 const lightboxOpen = ref(false)
@@ -264,6 +264,18 @@ const confirmerSuppression = () => {
   if (confirm(`Êtes-vous sûr de vouloir supprimer "${props.article.nom}" ?`)) {
     emit('supprimer', props.article.id)
   }
+}
+
+const ouvrirMessages = () => {
+  emit('ouvrir-messages', props.article.id)
+}
+
+const ouvrirOffres = () => {
+  emit('ouvrir-offres', props.article.id)
+}
+
+const ouvrirFavoris = () => {
+  emit('ouvrir-favoris', props.article.id)
 }
 
 const openLightbox = () => {
@@ -457,6 +469,15 @@ const telechargerDocument = (doc) => {
 .stat-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-item.clickable {
+  cursor: pointer;
+}
+
+.stat-item.clickable:hover {
+  background: #f3f4f6;
+  border: 1px solid #667eea;
 }
 
 .stat-item svg {

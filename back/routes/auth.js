@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const AuthController = require('../controllers/auth');
-const { authenticate, rateLimitLogin } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 
 // Routes publiques (pas besoin d'auth)
 
 // POST /api/auth/register - Inscription
 router.post('/register', AuthController.register);
 
-// POST /api/auth/login - Connexion (avec rate limiting)
-router.post('/login', rateLimitLogin, AuthController.login);
+// POST /api/auth/login - Connexion
+router.post('/login', AuthController.login);
 
 // POST /api/auth/refresh - Rafraîchir le token
 router.post('/refresh', AuthController.refreshToken);

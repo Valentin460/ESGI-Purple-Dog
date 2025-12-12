@@ -1,10 +1,22 @@
 <template>
   <div class="article-detail-view">
     <ArticleDetail v-if="article" :article="article" @retour="retourListe" @modifier="modifierArticle"
-      @baisser-prix="baisserPrix" />
+      @baisser-prix="baisserPrix" @ouvrir-messages="ouvrirMessages" @ouvrir-offres="ouvrirOffres"
+      @ouvrir-favoris="ouvrirFavoris" />
     <div v-else class="loading">
       <p>Chargement...</p>
     </div>
+
+    <!-- Modal Messagerie -->
+    <MessagerieArticle v-if="modalMessages && article" :article="article" @fermer="fermerMessages" />
+
+    <!-- Modal Offres -->
+    <OffresArticle v-if="modalOffres && article" :article="article" @fermer="fermerOffres"
+      @contacter-offreur="contacterOffreur" />
+
+    <!-- Modal Favoris -->
+    <FavorisArticle v-if="modalFavoris && article" :article="article" @fermer="fermerFavoris"
+      @contacter-utilisateur="contacterUtilisateur" @voir-offres="voirOffresUtilisateur" />
   </div>
 </template>
 
@@ -12,10 +24,16 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ArticleDetail from '../components/ArticleDetail.vue'
+import MessagerieArticle from '../components/MessagerieArticle.vue'
+import OffresArticle from '../components/OffresArticle.vue'
+import FavorisArticle from '../components/FavorisArticle.vue'
 
 const route = useRoute()
 const router = useRouter()
 const article = ref(null)
+const modalMessages = ref(false)
+const modalOffres = ref(false)
+const modalFavoris = ref(false)
 
 // Données de test - À remplacer par un appel API
 const mesObjets = [
@@ -121,6 +139,54 @@ const baisserPrix = () => {
     path: '/mes-objets',
     query: { baisserPrix: article.value.id }
   })
+}
+
+const ouvrirMessages = () => {
+  modalMessages.value = true
+}
+
+const fermerMessages = () => {
+  modalMessages.value = false
+}
+
+const ouvrirOffres = () => {
+  modalOffres.value = true
+}
+
+const fermerOffres = () => {
+  modalOffres.value = false
+}
+
+const contacterOffreur = (data) => {
+  console.log('Contacter offreur:', data)
+  // Fermer modal offres et ouvrir messagerie
+  modalOffres.value = false
+  modalMessages.value = true
+  // TODO: Ouvrir conversation avec cet utilisateur spécifique
+}
+
+const ouvrirFavoris = () => {
+  modalFavoris.value = true
+}
+
+const fermerFavoris = () => {
+  modalFavoris.value = false
+}
+
+const contacterUtilisateur = (data) => {
+  console.log('Contacter utilisateur:', data)
+  // Fermer modal favoris et ouvrir messagerie
+  modalFavoris.value = false
+  modalMessages.value = true
+  // TODO: Ouvrir conversation avec cet utilisateur spécifique
+}
+
+const voirOffresUtilisateur = (data) => {
+  console.log('Voir offres de l\'utilisateur:', data)
+  // Fermer modal favoris et ouvrir offres
+  modalFavoris.value = false
+  modalOffres.value = true
+  // TODO: Filtrer les offres pour cet utilisateur spécifique
 }
 </script>
 
