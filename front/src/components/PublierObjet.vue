@@ -591,8 +591,8 @@ const handleSubmit = async () => {
   error.value = ''
   photosError.value = ''
 
-  // Validation des photos (minimum 10)
-  if (formData.value.photos.length < 10) {
+  // Validation des photos (minimum 1)
+  if (formData.value.photos.length < 1) {
     photosError.value = 'Vous devez télécharger au moins 10 photos'
     error.value = 'Veuillez corriger les erreurs du formulaire'
     return

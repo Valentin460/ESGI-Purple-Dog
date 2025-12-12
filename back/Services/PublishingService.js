@@ -21,8 +21,8 @@ class PublishingService {
       this.validateItemData(itemData);
 
       // Valider le nombre d'images
-      if (!images || images.length < 10) {
-        throw new Error(`Minimum 10 photos requises. ${images ? images.length : 0} photo(s) fournie(s).`);
+      if (!images || images.length < 1) {
+        throw new Error(`Minimum 1 photos requises. ${images ? images.length : 0} photo(s) fournie(s).`);
       }
 
       if (images.length > 20) {
