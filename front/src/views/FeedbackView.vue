@@ -1,5 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import authService from '@/services/auth.service'
+import apiService from '@/services/api.service'
+
+const router = useRouter()
 
 const starRating = ref(0)
 const hoverRating = ref(0)
@@ -7,6 +12,26 @@ const npsScore = ref(null)
 const comments = ref('')
 const isSaving = ref(false)
 const successMessage = ref('')
+const errorMessage = ref('')
+const userId = ref(null)
+
+// Charger l'utilisateur au montage
+onMounted(async () => {
+  try {
+    if (!authService.isAuthenticated()) {
+      router.push('/auth/login')
+      return
+    }
+
+    const response = await authService.getCurrentUser()
+    if (response.success && response.data) {
+      userId.value = response.data.id
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement de l\'utilisateur:', error)
+    router.push('/auth/login')
+  }
+})
 
 const setStarRating = (rating) => {
   starRating.value = rating
@@ -38,20 +63,41 @@ const submitFeedback = async () => {
     return
   }
 
+  if (!userId.value) {
+    errorMessage.value = 'Erreur : utilisateur non identifié'
+    return
+  }
+
   isSaving.value = true
   successMessage.value = ''
+  errorMessage.value = ''
 
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  try {
+    // Envoyer le feedback au backend
+    // L'utilisateur évalue sa propre expérience sur la plateforme
+    await apiService.post('/api/reviews', {
+      reviewer_id: userId.value,
+      reviewee_id: userId.value, // Même utilisateur - feedback plateforme
+      rating: starRating.value,
+      comment: comments.value || null,
+      nps_score: npsScore.value
+    })
 
-  successMessage.value = 'Merci pour votre avis ! Votre retour a été enregistré avec succès.'
-  isSaving.value = false
+    successMessage.value = 'Merci pour votre avis ! Votre retour a été enregistré avec succès.'
 
-  setTimeout(() => {
-    starRating.value = 0
-    npsScore.value = null
-    comments.value = ''
-    successMessage.value = ''
-  }, 3000)
+    // Réinitialiser le formulaire après 3 secondes
+    setTimeout(() => {
+      starRating.value = 0
+      npsScore.value = null
+      comments.value = ''
+      successMessage.value = ''
+    }, 3000)
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi du feedback:', error)
+    errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.'
+  } finally {
+    isSaving.value = false
+  }
 }
 </script>
 
@@ -334,6 +380,7 @@ textarea {
   font-family: inherit;
   transition: all 0.2s;
   background-color: white;
+  color: #1a1a1a;
   resize: vertical;
   line-height: 1.5;
 }

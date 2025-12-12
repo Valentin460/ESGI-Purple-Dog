@@ -9,10 +9,6 @@ class ReviewService {
       throw new Error('reviewer_id, reviewee_id et rating sont obligatoires');
     }
 
-    if (parseInt(reviewer_id) === parseInt(reviewee_id)) {
-      throw new Error('Vous ne pouvez pas vous évaluer vous-même');
-    }
-
     if (rating < 1 || rating > 5) {
       throw new Error('La note doit être entre 1 et 5');
     }

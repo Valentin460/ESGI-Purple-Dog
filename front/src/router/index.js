@@ -7,6 +7,7 @@ import ArticleDetailView from '../views/ArticleDetailView.vue'
 import ArticleDetailClientView from '../views/ArticleDetailClientView.vue'
 import RechercheView from '../views/RechercheView.vue'
 import FeedbackView from '../views/FeedbackView.vue'
+import BackOfficeDashboard from '../views/BackOfficeDashboard.vue'
 import AuctionWon from '../views/AuctionWon.vue'
 import PaymentSuccess from '../views/PaymentSuccess.vue'
 import AdminDashboardView from '../views/AdminDashboardView.vue'
@@ -87,6 +88,14 @@ const router = createRouter({
       redirect: '/feedback'
     },
     {
+      path: '/backoffice',
+      name: 'backoffice',
+      component: BackOfficeDashboard,
+      meta: {
+        title: 'Back Office - Dashboard'
+      }
+    },
+    {
       path: '/auction-won/:id',
       name: 'AuctionWon',
       component: AuctionWon
@@ -103,11 +112,6 @@ const router = createRouter({
       meta: {
         title: 'Dashboard Admin - Purple Dog'
       }
-    },
-    {
-      path: '/',
-      name: 'Home',
-      component: () => import('../views/Home.vue')
     },
     {
       path: '/profile/userProfile',

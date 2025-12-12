@@ -42,7 +42,7 @@
             <input
               type="email"
               v-model="userProfile.email"
-              class="w-full px-4 py-3 border rounded-lg bg-gray-100"
+              class="w-full px-4 py-3 border rounded-lg bg-gray-100 text-gray-900"
               disabled
             />
           </div>
@@ -219,7 +219,7 @@
       </div>
 
       <!-- Préférences -->
-      <div class="bg-white rounded-lg shadow-md p-8">
+      <div class="bg-white rounded-lg shadow-md p-8 mb-6">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Préférences</h2>
 
         <div class="space-y-4">
@@ -267,6 +267,25 @@
               <p class="text-sm text-gray-600">Recevoir des notifications sur l'activité du compte</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Donner son avis -->
+      <div class="bg-gradient-to-r from-green-950 to-indigo-600 rounded-lg shadow-md p-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="text-white">
+            <h2 class="text-2xl font-bold mb-2">Votre avis compte !</h2>
+            <p class="text-green-100">Aidez-nous à améliorer Purple Dog en partageant votre expérience</p>
+          </div>
+          <RouterLink
+            to="/feedback"
+            class="px-8 py-3 bg-white text-green-950 font-semibold rounded-lg hover:bg-gray-100 transition-all shadow-lg whitespace-nowrap flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+            </svg>
+            Donner mon avis
+          </RouterLink>
         </div>
       </div>
     </div>
