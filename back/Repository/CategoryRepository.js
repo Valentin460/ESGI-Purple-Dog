@@ -3,34 +3,34 @@ const prisma = new PrismaClient();
 
 class CategoryRepository {
   async create(data) {
-    return await prisma.category.create({
-      data
-    });
+    return await prisma.category.create({ data });
   }
 
   async findAll(options = {}) {
+    const { skip = 0, take = 20 } = options;
     return await prisma.category.findMany({
-      ...options,
+      skip: parseInt(skip),
+      take: parseInt(take),
       orderBy: { created_at: 'desc' }
     });
   }
 
   async findById(id) {
     return await prisma.category.findUnique({
-      where: { id: parseInt(id) },
-      include: {
-        items: {
-          include: {
-            item: true
-          }
-        }
-      }
+      where: { id: parseInt(id) }
     });
   }
 
   async findBySlug(slug) {
     return await prisma.category.findUnique({
       where: { slug }
+    });
+  }
+
+  async findActive() {
+    return await prisma.category.findMany({
+      where: { is_active: true },
+      orderBy: { name: 'asc' }
     });
   }
 
@@ -49,47 +49,6 @@ class CategoryRepository {
 
   async count() {
     return await prisma.category.count();
-  }
-
-  async findActive() {
-    return await prisma.category.findMany({
-      where: { is_active: true },
-      orderBy: { name: 'asc' }
-    });
-  }
-
-  async findRootCategories() {
-    return await prisma.category.findMany({
-      where: {
-        parent_id: null
-      },
-      include: {
-        children: true
-      }
-    });
-  }
-
-  async findByParentId(parentId) {
-    return await prisma.category.findMany({
-      where: {
-        parent_id: parseInt(parentId)
-      }
-    });
-  }
-
-  async findCategoryTree() {
-    return await prisma.category.findMany({
-      where: {
-        parent_id: null
-      },
-      include: {
-        children: {
-          include: {
-            children: true
-          }
-        }
-      }
-    });
   }
 }
 

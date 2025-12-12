@@ -21,7 +21,7 @@ const itemRoutes = require('./Routes/ItemsRoutes');
 const userRoutes = require('./routes/UserRoutes');
 const individualRoutes = require('./routes/IndividualsRoutes');
 const professionalRoutes = require('./routes/ProfessionalsRoutes');
-const categoryRoutes = require('./routes/CategoryRoutes');
+const categoryRoutes = require('./Routes/CategoryRoutes');
 const auctionRoutes = require('./routes/AuctionRoutes');
 const bidRoutes = require('./routes/BidRoutes');
 const conversationRoutes = require('./routes/ConversationRoutes');
@@ -46,6 +46,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/subscription-plans', subscriptionPlanRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/categories', categoryRoutes);
 
 // Route de test
 app.get('/', (req, res) => {

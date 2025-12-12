@@ -1,31 +1,31 @@
 const CategoryRepository = require('../Repository/CategoryRepository');
 
-// Fonction utilitaire pour générer un slug
+// Générer un slug à partir d'un texte
 function generateSlug(text) {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Retire les accents
-    .replace(/[^a-z0-9]+/g, '-')     // Remplace les caractères spéciaux par des tirets
-    .replace(/^-+|-+$/g, '');        // Retire les tirets au début et à la fin
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 class CategoryService {
-
   async createCategory(categoryData) {
     const { name, description } = categoryData;
 
     if (!name) {
-      throw new Error('name est obligatoire');
+      throw new Error('Le nom est obligatoire');
     }
 
-    // Générer le slug automatiquement si non fourni
-    const slug = categoryData.slug || generateSlug(name);
-
     try {
+      // Générer le slug automatiquement
+      const slug = categoryData.slug || generateSlug(name);
+
+      // Vérifier si le slug existe déjà
       const existingCategory = await CategoryRepository.findBySlug(slug);
       if (existingCategory) {
-        throw new Error('Ce slug est déjà utilisé');
+        throw new Error('Cette catégorie existe déjà');
       }
 
       const newCategory = await CategoryRepository.create({
@@ -47,20 +47,20 @@ class CategoryService {
 
   async getAllCategories(pagination = {}) {
     try {
-      const { page = 1, limit = 10 } = pagination;
-      const skip = (page - 1) * limit;
+      const { page = 1, limit = 20 } = pagination;
+      const skip = (page - 1) * parseInt(limit);
 
-      const categories = await CategoryRepository.findAll({ skip, take: limit });
+      const categories = await CategoryRepository.findAll({ skip, take: parseInt(limit) });
       const total = await CategoryRepository.count();
 
       return {
         success: true,
         data: categories,
         pagination: {
-          page,
-          limit,
+          page: parseInt(page),
+          limit: parseInt(limit),
           total,
-          pages: Math.ceil(total / limit)
+          pages: Math.ceil(total / parseInt(limit))
         }
       };
     } catch (error) {
@@ -74,7 +74,8 @@ class CategoryService {
 
       return {
         success: true,
-        data: categories
+        data: categories,
+        count: categories.length
       };
     } catch (error) {
       throw new Error(`Erreur récupération catégories actives: ${error.message}`);
@@ -120,6 +121,7 @@ class CategoryService {
         throw new Error('Catégorie non trouvée');
       }
 
+      // Si le slug change, vérifier qu'il n'existe pas déjà
       if (updateData.slug && updateData.slug !== category.slug) {
         const existingSlug = await CategoryRepository.findBySlug(updateData.slug);
         if (existingSlug) {
@@ -156,7 +158,7 @@ class CategoryService {
         data: updatedCategory
       };
     } catch (error) {
-      throw new Error(`Erreur modification statut catégorie: ${error.message}`);
+      throw new Error(`Erreur modification statut: ${error.message}`);
     }
   }
 
@@ -175,42 +177,6 @@ class CategoryService {
       };
     } catch (error) {
       throw new Error(`Erreur suppression catégorie: ${error.message}`);
-    }
-  }
-
-  async getRootCategories() {
-    try {
-      const categories = await CategoryRepository.findRootCategories();
-      return {
-        success: true,
-        data: categories
-      };
-    } catch (error) {
-      throw new Error(`Erreur récupération catégories racines: ${error.message}`);
-    }
-  }
-
-  async getChildrenCategories(parentId) {
-    try {
-      const categories = await CategoryRepository.findByParentId(parentId);
-      return {
-        success: true,
-        data: categories
-      };
-    } catch (error) {
-      throw new Error(`Erreur récupération sous-catégories: ${error.message}`);
-    }
-  }
-
-  async getCategoryTree() {
-    try {
-      const categories = await CategoryRepository.findCategoryTree();
-      return {
-        success: true,
-        data: categories
-      };
-    } catch (error) {
-      throw new Error(`Erreur récupération arbre catégories: ${error.message}`);
     }
   }
 }

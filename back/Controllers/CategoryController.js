@@ -1,6 +1,6 @@
 const CategoryService = require('../Services/CategoryService');
 
-const CategoryController = {
+class CategoryController {
   async createCategory(req, res) {
     try {
       const result = await CategoryService.createCategory(req.body);
@@ -11,7 +11,7 @@ const CategoryController = {
         error: error.message
       });
     }
-  },
+  }
 
   async getAllCategories(req, res) {
     try {
@@ -24,7 +24,7 @@ const CategoryController = {
         error: error.message
       });
     }
-  },
+  }
 
   async getActiveCategories(req, res) {
     try {
@@ -36,7 +36,7 @@ const CategoryController = {
         error: error.message
       });
     }
-  },
+  }
 
   async getCategoryById(req, res) {
     try {
@@ -48,53 +48,11 @@ const CategoryController = {
         error: error.message
       });
     }
-  },
+  }
 
-  // GET /categories/root - Catégories racines
-  getRootCategories: async (req, res) => {
+  async getCategoryBySlug(req, res) {
     try {
-      const result = await CategoryService.getRootCategories();
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
-    }
-  },
-
-  // GET /categories/tree - Arbre des catégories
-  getCategoryTree: async (req, res) => {
-    try {
-      const result = await CategoryService.getCategoryTree();
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
-    }
-  },
-
-  // GET /categories/:id/children - Sous-catégories
-  getChildrenCategories: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const result = await CategoryService.getChildrenCategories(id);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        error: error.message
-      });
-    }
-  },
-
-  // GET /categories/slug/:slug - Par slug
-  getCategoryBySlug: async (req, res) => {
-    try {
-      const { slug } = req.params;
-      const result = await CategoryService.getCategoryBySlug(slug);
+      const result = await CategoryService.getCategoryBySlug(req.params.slug);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({
@@ -102,7 +60,7 @@ const CategoryController = {
         error: error.message
       });
     }
-  },
+  }
 
   async updateCategory(req, res) {
     try {
@@ -114,7 +72,7 @@ const CategoryController = {
         error: error.message
       });
     }
-  },
+  }
 
   async toggleCategoryStatus(req, res) {
     try {
@@ -126,7 +84,7 @@ const CategoryController = {
         error: error.message
       });
     }
-  },
+  }
 
   async deleteCategory(req, res) {
     try {
@@ -139,6 +97,6 @@ const CategoryController = {
       });
     }
   }
-};
+}
 
-module.exports = CategoryController;
+module.exports = new CategoryController();
