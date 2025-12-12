@@ -1,0 +1,94 @@
+services:
+  # ==========================================
+  # PostgreSQL Database
+  # ==========================================
+  postgres:
+    image: postgres:17.4
+    container_name: purple_dog_postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5442:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - purple_dog_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # pgAdmin
+  # ==========================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: purple_dog_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@purpledog.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - purple_dog_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ==========================================
+  # Backend (Node.js)
+  # ==========================================
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: purple_dog_backend
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./back:/app
+      - /app/node_modules
+    networks:
+      - purple_dog_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm start
+
+  # ==========================================
+  # Frontend (Vue.js)
+  # ==========================================
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: purple_dog_frontend
+    ports:
+      - "5137:8080"
+    networks:
+      - purple_dog_network
+    depends_on:
+      - backend
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  purple_dog_network:
+    driver: bridge

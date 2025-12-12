@@ -1,26 +1,55 @@
-FROM node:18-alpine
+FROM node:25-alpine
 
-# Set working directory
+# Installer PostgreSQL client et bash
+RUN apk add --no-cache postgresql-client bash openssl
+
+# Créer le dossier de l'application
 WORKDIR /app
 
-# Copy package files
+# Copier package.json et package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Installer les dépendances
+RUN npm install
 
-# Copy application files
+# Copier le schema Prisma
+COPY prisma ./prisma/
+
+# Générer le client Prisma
+RUN npx prisma generate
+
+# Copier tous les fichiers du backend
 COPY . .
 
-# Create uploads directory
-RUN mkdir -p uploads && chmod 755 uploads
+# Créer le dossier uploads
+RUN mkdir -p /app/uploads
 
-# Expose port
+# Exposer le port
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
-
-# Start application
-CMD ["npm", "start"]
+# Script de démarrage avec migration Prisma automatique
+CMD ["sh", "-c", "\
+  echo '════════════════════════════════════════════════════════════' && \
+  echo '🐕💜 Purple Dog Backend - Starting...' && \
+  echo '════════════════════════════════════════════════════════════' && \
+  echo '' && \
+  echo '⏳ Waiting for PostgreSQL to be ready...' && \
+  until PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c '\\q' 2>/dev/null; do \
+    echo '   PostgreSQL is unavailable - sleeping...' && \
+    sleep 2; \
+  done && \
+  echo '✅ PostgreSQL is ready!' && \
+  echo '' && \
+  echo '🔄 Running Prisma migrations...' && \
+  npx prisma migrate deploy && \
+  echo '✅ Migrations completed!' && \
+  echo '' && \
+  echo '🌱 Seeding database (if needed)...' && \
+  npx prisma db seed || echo 'No seed script or seed already done' && \
+  echo '' && \
+  echo '════════════════════════════════════════════════════════════' && \
+  echo '🚀 Starting Express Server...' && \
+  echo '════════════════════════════════════════════════════════════' && \
+  echo '' && \
+  node index.js \
+"]  
