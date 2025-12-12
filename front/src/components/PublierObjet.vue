@@ -448,8 +448,6 @@ const formData = ref({
   dureeEnchere: '7',
 })
 
-const photosInput = ref(null)
-const documentsInput = ref(null)
 const error = ref('')
 const success = ref(false)
 const photosError = ref('')
