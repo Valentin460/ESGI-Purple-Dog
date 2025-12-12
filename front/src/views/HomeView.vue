@@ -1,52 +1,18 @@
 <template>
     <div class="home-page">
         <!-- Header Navigation -->
-        <header class="luxury-header">
-            <div class="header-container">
-                <!-- Logo -->
-                <div class="logo-section">
-                    <h1 class="logo">Purple Dog</h1>
-                    <p class="logo-subtitle">Collection d'Exception</p>
-                </div>
+        
 
-                <!-- Search Bar -->
-                <div class="search-section">
-                    <div class="search-container">
-                        <Search :size="20" class="search-icon" />
-                        <input type="text" v-model="searchQuery" placeholder="Rechercher un objet de collection..."
-                            class="search-input" @keyup.enter="handleSearch" />
-                    </div>
-                </div>
 
-                <!-- User Actions -->
-                <div class="user-actions">
-                    <router-link to="/favoris" class="action-btn">
-                        <Heart :size="24" />
-                        <span class="action-label">Favoris</span>
-                    </router-link>
-                    <router-link to="/panier" class="action-btn">
-                        <ShoppingCart :size="24" />
-                        <span class="badge" v-if="cartCount > 0">{{ cartCount }}</span>
-                        <span class="action-label">Panier</span>
-                    </router-link>
-                    <router-link to="/connexion" class="action-btn primary">
-                        <User :size="24" />
-                        <span class="action-label">Connexion</span>
-                    </router-link>
-                </div>
-            </div>
-        </header>
 
-        <!-- Categories -->
-        <nav class="categories-nav">
-            <div class="categories-container">
-                <button v-for="category in categories" :key="category.name" @click="selectCategory(category.name)"
-                    :class="['category-btn', { active: selectedCategory === category.name }]">
-                    <component :is="category.icon" :size="20" />
-                    <span>{{ category.name }}</span>
-                </button>
-            </div>
-        </nav>
+
+
+
+
+
+
+
+        
 
         <!-- Hero Carousel -->
         <section class="hero-carousel">
@@ -294,109 +260,6 @@
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-container">
-                <div class="footer-main">
-                    <div class="footer-brand">
-                        <h3 class="footer-logo">Purple Dog</h3>
-                        <p class="footer-tagline">Collection d'Exception</p>
-                        <p class="footer-description">
-                            La plateforme de confiance pour vendre et acheter des objets de collection authentiques et
-                            de valeur.
-                        </p>
-                        <div class="footer-social">
-                            <a href="#" class="social-link facebook" aria-label="Facebook">
-                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                                </svg>
-                            </a>
-                            <a href="#" class="social-link instagram" aria-label="Instagram">
-                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
-                                </svg>
-                            </a>
-                            <a href="#" class="social-link twitter" aria-label="Twitter">
-                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
-                                </svg>
-                            </a>
-                            <a href="#" class="social-link linkedin" aria-label="LinkedIn">
-                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="footer-links">
-                        <div class="footer-column">
-                            <h4>Navigation</h4>
-                            <ul>
-                                <li><router-link to="/">Accueil</router-link></li>
-                                <li><router-link to="/forfait">Nos Forfaits</router-link></li>
-                                <li><router-link to="/publier">Vendre</router-link></li>
-                                <li><router-link to="/mes-objets">Mes Objets</router-link></li>
-                            </ul>
-                        </div>
-
-                        <div class="footer-column">
-                            <h4>Catégories</h4>
-                            <ul>
-                                <li><a href="#bijoux">Bijoux</a></li>
-                                <li><a href="#meubles">Meubles</a></li>
-                                <li><a href="#art">Art</a></li>
-                                <li><a href="#mode">Mode</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="footer-column">
-                            <h4>Informations</h4>
-                            <ul>
-                                <li><router-link to="/qui-sommes-nous">Qui Sommes-Nous ?</router-link></li>
-                                <li><router-link to="/mentions-legales">Mentions Légales</router-link></li>
-                                <li><router-link to="/contact">Contact</router-link></li>
-                                <li><router-link to="/faq">FAQ</router-link></li>
-                            </ul>
-                        </div>
-
-                        <div class="footer-column">
-                            <h4>Contact</h4>
-                            <ul class="footer-contact">
-                                <li>
-                                    <Mail :size="16" />
-                                    <a href="mailto:contact@purpledog.com">contact@purpledog.com</a>
-                                </li>
-                                <li>
-                                    <Phone :size="16" />
-                                    <a href="tel:+33123456789">+33 1 23 45 67 89</a>
-                                </li>
-                            </ul>
-                            <router-link to="/contact" class="btn-contact-footer">
-                                <MessageSquare :size="18" />
-                                Nous contacter
-                            </router-link>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="footer-bottom">
-                    <p>&copy; 2025 Purple Dog. Tous droits réservés.</p>
-                    <div class="footer-legal">
-                        <router-link to="/mentions-legales">Mentions Légales</router-link>
-                        <span>•</span>
-                        <router-link to="/politique-confidentialite">Politique de Confidentialité</router-link>
-                        <span>•</span>
-                        <router-link to="/cgu">CGU</router-link>
-                    </div>
-                </div>
-            </div>
-        </footer>
-
         <!-- Toast Notification -->
         <transition name="toast">
             <div v-if="showToast" class="toast">
@@ -431,9 +294,6 @@ import {
     Shield,
     Truck as TruckIcon,
     Award,
-    Mail,
-    Phone,
-    MessageSquare,
     CheckCircle
 } from 'lucide-vue-next'
 
@@ -447,18 +307,7 @@ const showToast = ref(false)
 const toastMessage = ref('')
 const newsletterEmail = ref('')
 
-// Categories
-const categories = [
-    { name: 'Tendances', icon: TrendingUp },
-    { name: 'Bijoux', icon: Gem },
-    { name: 'Meubles', icon: Sofa },
-    { name: 'Art', icon: Palette },
-    { name: 'Collection', icon: Library },
-    { name: 'Musique', icon: Music },
-    { name: 'Mode', icon: Shirt },
-    { name: 'Sculpture', icon: Hammer },
-    { name: 'Autres', icon: MoreHorizontal }
-]
+
 
 // Hero Images
 const heroImages = [
@@ -1918,215 +1767,6 @@ const subscribeNewsletter = () => {
     transform: translateY(20px);
 }
 
-/* Footer */
-.footer {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-    color: white;
-    padding: 4rem 0 0 0;
-}
-
-.footer-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
-}
-
-.footer-main {
-    display: grid;
-    grid-template-columns: 1.5fr 2fr;
-    gap: 4rem;
-    padding-bottom: 3rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.footer-brand {
-    max-width: 400px;
-}
-
-.footer-logo {
-    font-size: 2rem;
-    font-weight: 800;
-    margin: 0 0 0.5rem 0;
-    background: linear-gradient(135deg, #d4af37 0%, #f4e4c1 50%, #d4af37 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.footer-tagline {
-    font-size: 0.85rem;
-    color: #d4af37;
-    margin: 0 0 1.5rem 0;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-.footer-description {
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.6;
-    margin: 0 0 2rem 0;
-}
-
-.footer-social {
-    display: flex;
-    gap: 1rem;
-}
-
-.social-link {
-    width: 40px;
-    height: 40px;
-    background: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-}
-
-.social-link.facebook {
-    color: #1877F2;
-}
-
-.social-link.facebook:hover {
-    background: #1877F2;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
-}
-
-.social-link.instagram {
-    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-    color: white;
-}
-
-.social-link.instagram:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(188, 24, 136, 0.4);
-}
-
-.social-link.twitter {
-    color: #1DA1F2;
-}
-
-.social-link.twitter:hover {
-    background: #1DA1F2;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);
-}
-
-.social-link.linkedin {
-    color: #0A66C2;
-}
-
-.social-link.linkedin:hover {
-    background: #0A66C2;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
-}
-
-.footer-links {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-}
-
-.footer-column h4 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #d4af37;
-    margin: 0 0 1.5rem 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.footer-column ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.footer-column ul li a {
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
-    transition: all 0.3s;
-    display: block;
-}
-
-.footer-column ul li a:hover {
-    color: #d4af37;
-    padding-left: 8px;
-}
-
-.footer-contact li {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.footer-contact li svg {
-    color: #d4af37;
-    flex-shrink: 0;
-}
-
-.btn-contact-footer {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: #d4af37;
-    color: #1a1a1a;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: 700;
-    margin-top: 1.5rem;
-    transition: all 0.3s;
-}
-
-.btn-contact-footer:hover {
-    background: #b8941f;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-}
-
-.footer-bottom {
-    padding: 2rem 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.9rem;
-}
-
-.footer-bottom p {
-    margin: 0;
-}
-
-.footer-legal {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-.footer-legal a {
-    color: rgba(255, 255, 255, 0.5);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-legal a:hover {
-    color: #d4af37;
-}
-
-.footer-legal span {
-    color: rgba(255, 255, 255, 0.3);
-}
-
 /* Responsive */
 @media (max-width: 1024px) {
     .header-container {
@@ -2151,8 +1791,26 @@ const subscribeNewsletter = () => {
     }
 
     .featured-grid-luxury {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         padding: 0 2rem;
+        gap: 2rem;
+    }
+
+    .section-header-luxury {
+        padding: 0 2rem;
+    }
+
+    .section-header-luxury h2 {
+        font-size: 2.5rem;
+    }
+
+    .auction-container {
+        padding: 2rem;
+    }
+
+    .services-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
     }
 }
 
@@ -2171,20 +1829,33 @@ const subscribeNewsletter = () => {
     }
 
     .hero-carousel {
-        height: 400px;
+        height: 300px;
     }
 
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 
     .hero-subtitle {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     .hero-cta {
-        padding: 1rem 1.75rem;
-        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .carousel-controls {
+        padding: 1rem;
+    }
+
+    .carousel-btn {
+        width: 35px;
+        height: 35px;
+    }
+
+    .featured-section {
+        padding: 3rem 0;
     }
 
     .featured-grid {
@@ -2193,12 +1864,32 @@ const subscribeNewsletter = () => {
 
     .featured-grid-luxury {
         grid-template-columns: 1fr;
-        padding: 0 1.5rem;
-        gap: 3rem;
+        padding: 0 1rem;
+        gap: 2.5rem;
+    }
+
+    .section-header-luxury {
+        padding: 0 1rem;
+        margin-bottom: 2.5rem;
     }
 
     .section-header-luxury h2 {
-        font-size: 2rem;
+        font-size: 1.75rem;
+    }
+
+    .section-header-luxury p {
+        font-size: 0.9rem;
+    }
+
+    .collection-cta {
+        margin-top: 3rem;
+        padding: 0 1rem;
+    }
+
+    .btn-discover-collection {
+        width: 100%;
+        padding: 0.875rem 2rem;
+        font-size: 0.85rem;
     }
 
     .newsletter-form {
@@ -2213,12 +1904,68 @@ const subscribeNewsletter = () => {
         height: 300px;
     }
 
+    .auction-banner {
+        padding: 3rem 1rem;
+    }
+
+    .auction-container {
+        padding: 1.5rem;
+        gap: 2rem;
+    }
+
+    .auction-title {
+        font-size: 1.25rem;
+    }
+
+    .auction-image-container {
+        height: 250px;
+    }
+
+    .categories-grid-section {
+        padding: 3rem 1rem;
+    }
+
     .categories-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .presentation-section {
+        padding: 3rem 1rem;
     }
 
     .presentation-container {
         grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .services-section {
+        padding: 3rem 1rem;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .service-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .service-card p {
+        font-size: 0.9rem;
+    }
+
+    .newsletter-section {
+        padding: 3rem 1rem;
+    }
+
+    .newsletter-content h2 {
+        font-size: 1.75rem;
+    }
+
+    .newsletter-content p {
+        font-size: 0.9rem;
     }
 
     .presentation-content {
@@ -2243,34 +1990,5 @@ const subscribeNewsletter = () => {
         justify-content: center;
     }
 
-    .footer-main {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-    }
-
-    .footer-links {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .footer-bottom {
-        flex-direction: column;
-        gap: 1.5rem;
-        text-align: center;
-    }
-}
-
-@media (max-width: 768px) {
-    .footer-links {
-        grid-template-columns: 1fr;
-    }
-
-    .footer-legal {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .footer-legal span {
-        display: none;
-    }
 }
 </style>
