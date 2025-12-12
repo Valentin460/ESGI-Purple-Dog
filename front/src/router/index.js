@@ -94,6 +94,8 @@ const router = createRouter({
       meta: {
         title: 'Back Office - Dashboard'
       }
+    },
+    {
       path: '/auction-won/:id',
       name: 'AuctionWon',
       component: AuctionWon
