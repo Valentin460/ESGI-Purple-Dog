@@ -286,11 +286,8 @@ import {
     Shirt,
     Hammer,
     MoreHorizontal,
-    Sparkles,
     ChevronLeft,
     ChevronRight,
-    Crown,
-    Eye,
     Shield,
     Truck as TruckIcon,
     Award,
@@ -298,9 +295,6 @@ import {
 } from 'lucide-vue-next'
 
 // State
-const searchQuery = ref('')
-const selectedCategory = ref('Tendances')
-const cartCount = ref(0)
 const currentSlide = ref(0)
 const currentAuctionSlide = ref(0)
 const showToast = ref(false)
@@ -514,18 +508,6 @@ const prevSlide = () => {
     currentSlide.value = currentSlide.value === 0
         ? heroImages.length - 1
         : currentSlide.value - 1
-}
-
-const selectCategory = (category) => {
-    selectedCategory.value = category
-    // TODO: Filter items by category
-}
-
-const handleSearch = () => {
-    if (searchQuery.value.trim()) {
-        // TODO: Implement search
-        console.log('Searching for:', searchQuery.value)
-    }
 }
 
 const subscribeNewsletter = () => {

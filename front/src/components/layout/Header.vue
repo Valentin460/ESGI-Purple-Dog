@@ -74,9 +74,26 @@
     </nav>
   </header>
 
+  <!-- Toggle secondaire (mobile) -->
+  <div class="flex md:hidden justify-end px-4 py-2 bg-white border-b border-gray-200">
+    <button
+      type="button"
+      class="flex items-center gap-2 px-3 py-2 rounded-full border border-gray-300 text-gray-800 text-sm font-medium shadow-sm"
+      @click="isSecondaryOpen = !isSecondaryOpen"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M3 12h18M3 18h18" />
+      </svg>
+      <span>Catégories</span>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" :class="['w-4 h-4 transition-transform', isSecondaryOpen ? 'rotate-180' : 'rotate-0']">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25 12 15.75 4.5 8.25" />
+      </svg>
+    </button>
+  </div>
+
   <!-- Menu secondaire -->
-  <nav class="nav-bar">
-    <div class="flex gap-8 justify-center text-sm font-medium items-center">
+  <nav class="nav-bar" :class="{ 'hidden md:flex': !isSecondaryOpen, 'flex': isSecondaryOpen }">
+    <div class="w-full flex flex-col md:flex-row gap-4 md:gap-8 justify-center text-sm font-medium items-center md:items-center">
       <RouterLink to="/tendances" class="router-nav flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
@@ -185,6 +202,7 @@ const user = ref({
 })
 
 const showRegisterModal = ref(false)
+const isSecondaryOpen = ref(false)
 
 const query = ref('')
 

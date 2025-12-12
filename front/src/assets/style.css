@@ -44,11 +44,11 @@
         @apply bg-green-700
     }
     .nav-bar{
-      @apply bg-white border-b border-gray-200 py-3 overflow-x-auto;
+      @apply flex bg-white border-b border-gray-200 py-3 overflow-x-auto;
     }
 
     .nav-bar > div {
-      @apply flex gap-3 md:gap-6 lg:gap-8 xl:gap-10 justify-start md:justify-center text-sm font-medium items-center px-4 md:px-2 lg:px-4 xl:px-6;
+      @apply w-full flex flex-col md:flex-row gap-3 md:gap-6 lg:gap-8 xl:gap-10 justify-start md:justify-center text-sm font-medium items-stretch md:items-center px-4 md:px-2 lg:px-4 xl:px-6;
     }
 
   .router-nav{
